@@ -1,0 +1,166 @@
+/***** treesamplingbias.h ***********************************************
+ * Description: function needed under the assumption of sampling bias
+ * Author: Franz Baumdicker, baumdicker@stochastik.uni-freiburg.de ; Peter Pfaffelhuber, pp@stochastik.uni-freiburg.de
+ * File created 2010.
+ *****************************************************************/
+
+#include "treestructure.h"
+#include <stddef.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+
+
+long long int combinations(const int n, const int k){
+  // If n == k or k == 0, then the result is 1
+        if (n == k || k == 0)   return 1;
+        // If k is 1, result is n
+        if (k == 1)     return n;
+	if (k == n-1)	return n;
+ 
+        // n < k, return ERROR -1
+        if (n < k){
+	  printf("WARNING: wrong binomial\n");
+	  return -1;
+	}
+        else{
+          int i;
+	  long long int result, fact_n, fact_k, fact_n_sub_k;
+	  //n!
+	  fact_n = 1;
+	  for (i = 2; i <= n; i++){
+	    fact_n *= i;
+	  }
+	  //k!
+	  fact_k = 1;
+	  for (i = 2; i <= k; i++){
+	    fact_k *= i;
+	  }
+	  //(n - k)!
+	  fact_n_sub_k = 1;
+	  i = 2;
+	  while (i <= (n - k)){
+	    fact_n_sub_k *= i;
+	    i++;
+	  }
+	  result = fact_n / (fact_k * fact_n_sub_k);
+	  return result;
+        }
+}
+
+
+// compute f_notlost, see supplement
+void comp_fnotlost (int leaves, float *fnotlost_k, float rho, unsigned long int largeN ){
+  int k;
+  int smalln = leaves;
+  unsigned long int l;
+  float prod;
+  for(k = 1; k < leaves+1; k++){
+    prod = 1.;
+    for(l=smalln+1; l < largeN+1; l++){
+      prod *= l*(l-1)/(l*(l-1) + rho*k);
+    }
+    fnotlost_k[k-1] = prod;
+  }
+
+}
+
+
+// compute f_lost, see supplement
+void comp_flost (int leaves, float *flost_k,float *fnotlost_k ){
+  int k,j;
+  int smalln = leaves;
+  float summe;
+  unsigned long int l;
+  for(k = 1; k < leaves+1; k++){
+    summe = 0.;
+    summe += 1.;  // this is for j=0;
+    for (j=1; j < k+1; j++){
+      summe += pow(-1,j) * combinations(k,j) * fnotlost_k[j-1];
+    }
+    flost_k[k-1] = summe;
+  }
+     
+}
+
+
+
+// compute sampling bias correcting for the gene frequency spectrum
+void comp_gfs_bias (int leaves, float *gfs_bias_theo, float *gfs_theo, float *flost_k, float *fnotlost_k, float theta, float rho, float core){
+int k, i;
+int n = leaves;
+float summe;
+  for(k = 1; k < leaves+1; k++){
+    summe = 0;
+    for(i = 0; i < leaves-k; i++){
+      summe += gfs_theo[n-i-1]*combinations(n-i,n-i-k)*fnotlost_k[k-1]*flost_k[n-i-k-1];
+    }
+    i = leaves-k;
+    summe += gfs_theo[n-i-1] * 1. * fnotlost_k[k-1] * 1. ; // flost_k[-1] should be 1.
+    // leaves - i -1 = leaves -leaves + k -1 = k-1
+    gfs_bias_theo[k-1] = summe;
+  }
+   
+  float N1;
+  N1 = leaves * theta/rho * (1 - fnotlost_k[0]);  // 0 = 1-1
+  //   printfloats(gfs_bias_theo,leaves);
+  gfs_bias_theo[0] = gfs_bias_theo[0] + N1;
+  gfs_bias_theo[leaves-1] = gfs_bias_theo[leaves-1] + core;
+}
+
+
+
+
+// this function shows that the computed sizes for gfs_samplingbias and the simulated sizes equal  // not used in IMaGe
+void simulate_sampling_bias_means (int leaves, float theta, float rho, float core, int runs){  
+  //  printf("simulate means of gfs with sampling bias:\n");
+  int n;
+  n = 2*leaves-1; 
+
+  Node *tree;
+  tree = (Node *)malloc(n*sizeof(Node));
+
+  float *gfs_sim, *randoms, *gfs_simmeans, *randoms_means;
+  gfs_sim = (float *)malloc(leaves*sizeof(float));
+  randoms = (float *)malloc(leaves*sizeof(float));  
+  gfs_simmeans = (float *)malloc(leaves*sizeof(float));  
+  randoms_means = (float *)malloc(leaves*sizeof(float));  
+
+  int idex;
+  int j;
+  Node *list[leaves];
+
+  for(j=1; j < leaves+1; j++){
+    gfs_simmeans[j-1] = 0;
+    randoms_means[j-1] = 0;
+  }
+
+
+  for(idex = 0; idex< runs; idex++){     
+      /* create a random coalescent tree*/
+      free(tree);
+      tree = (Node *)malloc(n*sizeof(Node));
+      maketree(tree,list,leaves);
+      
+      enlargebranches(tree,leaves, generate_random_enlargementsize(leaves, 10000) );
+      
+      /* compute parameters of the poisson distribution*/
+      rootTree(tree,NULL);
+      unprob(tree);
+      computeprobsall(tree,leaves,rho);
+      rootTree(tree,NULL);
+      treegfs(tree,leaves,gfs_sim,rho);
+
+      /* create random gfs for this tree*/
+      creategenenumbers(leaves,gfs_sim,randoms,theta,rho);
+
+      for(j=1; j < leaves+1; j++){
+	  randoms_means[j-1] += randoms[j-1]/runs;
+	  gfs_simmeans[j-1] += theta/rho*gfs_sim[j-1]/runs;
+      }
+  }
+
+  printf("simulated GFS with sampling bias is:\n");
+  printfloats(gfs_simmeans,leaves);
+  printfloats(randoms_means, leaves);
+}

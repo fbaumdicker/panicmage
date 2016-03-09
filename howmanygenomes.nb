@@ -1,0 +1,695 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 8.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       157,          7]
+NotebookDataLength[     29253,        686]
+NotebookOptionsPosition[     28155,        643]
+NotebookOutlinePosition[     28670,        662]
+CellTagsIndexPosition[     28627,        659]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell["\<\
+How many genes would we expect to know if n genomes where sampled?\
+\>", "Chapter",
+ CellChangeTimes->{{3.6338605099275827`*^9, 3.6338605946725597`*^9}, 
+   3.633860638791445*^9}],
+
+Cell[BoxData[
+ RowBox[{"SetOptions", "[", 
+  RowBox[{
+   RowBox[{"EvaluationNotebook", "[", "]"}], ",", 
+   RowBox[{"InitializationCellEvaluation", "\[Rule]", "True"}], ",", 
+   RowBox[{"InitializationCellWarning", "\[Rule]", "False"}]}], 
+  "]"}]], "Input",
+ Editable->False,
+ CellOpen->False,
+ CellChangeTimes->{{3.6348817483574667`*^9, 3.634881748357643*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"g", "[", 
+   RowBox[{"x_", ",", " ", "\[Rho]_", ",", " ", "\[Gamma]_"}], "]"}], " ", ":=",
+   " ", 
+  RowBox[{
+   RowBox[{"Exp", "[", 
+    RowBox[{"\[Gamma]", "*", "x"}], "]"}], "/", 
+   RowBox[{"(", 
+    RowBox[{"x", "*", 
+     RowBox[{
+      RowBox[{"(", 
+       RowBox[{"1", " ", "-", " ", "x"}], ")"}], "^", 
+      RowBox[{"(", 
+       RowBox[{"1", " ", "-", " ", "\[Rho]"}], ")"}]}]}], ")"}]}]}]], "Code",
+ Editable->False,
+ CellOpen->False,
+ InitializationCell->True,
+ CellChangeTimes->{{3.60106558845686*^9, 3.601065599269876*^9}, 
+   3.63385976623728*^9}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"Off", "[", 
+  RowBox[{"NIntegrate", "::", "inumr"}], "]"}], "\[IndentingNewLine]", 
+ RowBox[{"Manipulate", "[", 
+  RowBox[{
+   RowBox[{"LogLinearPlot", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"core", ",", 
+       RowBox[{
+        RowBox[{"NIntegrate", "[", 
+         RowBox[{
+          RowBox[{"theta", "*", 
+           RowBox[{"g", "[", 
+            RowBox[{"x", ",", "rho", ",", "gamma"}], "]"}], "*", 
+           RowBox[{"(", 
+            RowBox[{"1", "-", 
+             RowBox[{
+              RowBox[{"(", 
+               RowBox[{"1", "-", "x"}], ")"}], "^", "n"}]}], ")"}]}], ",", 
+          RowBox[{"{", 
+           RowBox[{"x", ",", "pers", ",", "1"}], "}"}]}], "]"}], "+", 
+        "core"}], ",", 
+       RowBox[{
+        RowBox[{"NIntegrate", "[", 
+         RowBox[{
+          RowBox[{"theta", "*", 
+           RowBox[{"g", "[", 
+            RowBox[{"x", ",", "rho", ",", "gamma"}], "]"}]}], ",", 
+          RowBox[{"{", 
+           RowBox[{"x", ",", "pers", ",", "1"}], "}"}]}], "]"}], "+", 
+        "core"}], ",", 
+       RowBox[{
+        RowBox[{"NIntegrate", "[", 
+         RowBox[{
+          RowBox[{"theta", "*", 
+           RowBox[{"g", "[", 
+            RowBox[{"x", ",", "rho", ",", "gamma"}], "]"}], "*", 
+           RowBox[{"(", 
+            RowBox[{"1", "-", 
+             RowBox[{
+              RowBox[{"(", 
+               RowBox[{"1", "-", "x"}], ")"}], "^", "n"}]}], ")"}]}], ",", 
+          RowBox[{"{", 
+           RowBox[{"x", ",", "0", ",", "1"}], "}"}]}], "]"}], "+", "core"}]}],
+       "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"n", ",", "1", ",", "noofsege"}], "}"}], ",", " ", 
+     RowBox[{"Filling", "\[Rule]", 
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"1", "\[Rule]", " ", "0"}], ",", 
+        RowBox[{"4", "\[Rule]", "0"}], ",", 
+        RowBox[{"2", "\[Rule]", "0"}]}], "}"}]}], ",", 
+     RowBox[{"FillingStyle", "\[Rule]", 
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"Opacity", "[", "0.8", "]"}], ",", "Blue"}], "}"}]}], ",", 
+     "  ", 
+     RowBox[{"PlotStyle", "\[Rule]", 
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"Directive", "[", 
+         RowBox[{"Thick", ",", "Purple"}], "]"}], ",", 
+        RowBox[{"Directive", "[", 
+         RowBox[{"Thick", ",", "Blue"}], "]"}], ",", 
+        RowBox[{"Directive", "[", 
+         RowBox[{"Blue", ",", "Dashed"}], "]"}], ",", 
+        RowBox[{"Directive", "[", 
+         RowBox[{"Thick", ",", "Black"}], "]"}]}], "}"}]}], ",", 
+     RowBox[{"AxesStyle", "\[Rule]", 
+      RowBox[{"Thickness", "[", "0.0025", "]"}]}], ",", 
+     RowBox[{"ImageSize", "\[Rule]", "Large"}], ",", 
+     RowBox[{"PlotRange", "\[Rule]", " ", 
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{"1", ",", "Automatic"}], "}"}], ",", 
+        RowBox[{"{", 
+         RowBox[{"0", ",", "Automatic"}], "}"}]}], "}"}]}], ",", 
+     RowBox[{"PlotLegends", " ", "\[Rule]", " ", 
+      RowBox[{"{", 
+       RowBox[{
+       "\"\<core\>\"", ",", "\"\<sampled persistent pangenome\>\"", ",", 
+        "\"\<persistent pangenome size\>\"", ",", 
+        "\"\<sampled pangenome\>\""}], "}"}]}]}], "]"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"noofsege", ",", "200", ",", "\"\<no of sampled genomes\>\""}], 
+      "}"}], ",", "2", ",", "1000"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+      "pers", ",", "0.01", ",", 
+       "\"\<minimum frequency of persistent genes\>\""}], "}"}], ",", 
+     "0.0001", ",", "0.2"}], "}"}], ",", "Delimiter", ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"theta", ",", "1000", ",", "\"\<gene gain rate\>\""}], "}"}], 
+     ",", "0", ",", "5000"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"rho", ",", "1", ",", "\"\<gene loss rate\>\""}], "}"}], ",", 
+     "0", ",", "20"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"gamma", ",", "0", ",", "\"\<gene transfer rate\>\""}], "}"}], 
+     ",", "0", ",", "10"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"core", ",", "1500", ",", "\"\<core genes\>\""}], "}"}], ",", 
+     "0", ",", "2500"}], "}"}]}], "]"}]}], "Input",
+ Editable->False,
+ CellOpen->False,
+ CellChangeTimes->{{3.63377889806921*^9, 3.633778905439383*^9}, {
+   3.633780988810834*^9, 3.6337810439664183`*^9}, {3.633781310934211*^9, 
+   3.633781395955476*^9}, {3.633848926237534*^9, 3.633848943348826*^9}, {
+   3.633849007503332*^9, 3.633849007662057*^9}, {3.633849061527116*^9, 
+   3.633849132753169*^9}, {3.633849162787972*^9, 3.633849327996372*^9}, {
+   3.633849403311645*^9, 3.633849403647333*^9}, {3.633849443065151*^9, 
+   3.633849471076941*^9}, {3.633854548949098*^9, 3.633854584564555*^9}, {
+   3.633854680272908*^9, 3.633854727823616*^9}, {3.633854904448674*^9, 
+   3.633854908551553*^9}, {3.633854949654364*^9, 3.6338549754165773`*^9}, {
+   3.6338550320214653`*^9, 3.6338550326625566`*^9}, {3.633855068955319*^9, 
+   3.633855118117436*^9}, {3.63385514832211*^9, 3.633855251776536*^9}, {
+   3.6338553848373423`*^9, 3.633855386654623*^9}, {3.63385546376616*^9, 
+   3.633855473679564*^9}, {3.633855616341457*^9, 3.633855791048235*^9}, {
+   3.633855942917119*^9, 3.633855953932394*^9}, {3.633856061906653*^9, 
+   3.633856108345787*^9}, {3.6338561703764668`*^9, 3.633856171408435*^9}, {
+   3.633856202512135*^9, 3.633856203205501*^9}, {3.633856274679793*^9, 
+   3.633856285361497*^9}, {3.6338563758872538`*^9, 3.633856568066144*^9}, 
+   3.633857040486095*^9, {3.6338571166720047`*^9, 3.633857155636785*^9}, {
+   3.633858742759552*^9, 3.633858743762982*^9}, {3.633858782434671*^9, 
+   3.63385881357229*^9}, {3.63385888607281*^9, 3.6338590111639214`*^9}, {
+   3.633859084784843*^9, 3.633859125746063*^9}, {3.633859827364511*^9, 
+   3.6338598277812843`*^9}, {3.63488286428857*^9, 3.6348828690742292`*^9}}],
+
+Cell[BoxData[
+ TagBox[
+  StyleBox[
+   DynamicModuleBox[{$CellContext`core$$ = 1500, $CellContext`gamma$$ = 
+    0, $CellContext`noofsege$$ = 200, $CellContext`pers$$ = 
+    0.01, $CellContext`rho$$ = 1, $CellContext`theta$$ = 1000, 
+    Typeset`show$$ = True, Typeset`bookmarkList$$ = {}, 
+    Typeset`bookmarkMode$$ = "Menu", Typeset`animator$$, Typeset`animvar$$ = 
+    1, Typeset`name$$ = "\"untitled\"", Typeset`specs$$ = {{{
+       Hold[$CellContext`noofsege$$], 200, "no of sampled genomes"}, 2, 
+      1000}, {{
+       Hold[$CellContext`pers$$], 0.01, 
+       "minimum frequency of persistent genes"}, 0.0001, 0.2}, {{
+       Hold[$CellContext`theta$$], 1000, "gene gain rate"}, 0, 5000}, {{
+       Hold[$CellContext`rho$$], 1, "gene loss rate"}, 0, 20}, {{
+       Hold[$CellContext`gamma$$], 0, "gene transfer rate"}, 0, 10}, {{
+       Hold[$CellContext`core$$], 1500, "core genes"}, 0, 2500}}, 
+    Typeset`size$$ = {850., {175., 181.}}, Typeset`update$$ = 0, 
+    Typeset`initDone$$, Typeset`skipInitDone$$ = 
+    True, $CellContext`noofsege$508307$$ = 0, $CellContext`pers$508308$$ = 
+    0, $CellContext`theta$508309$$ = 0, $CellContext`rho$508310$$ = 
+    0, $CellContext`gamma$508311$$ = 0, $CellContext`core$508312$$ = 0}, 
+    DynamicBox[Manipulate`ManipulateBoxes[
+     1, StandardForm, 
+      "Variables" :> {$CellContext`core$$ = 1500, $CellContext`gamma$$ = 
+        0, $CellContext`noofsege$$ = 200, $CellContext`pers$$ = 
+        0.01, $CellContext`rho$$ = 1, $CellContext`theta$$ = 1000}, 
+      "ControllerVariables" :> {
+        Hold[$CellContext`noofsege$$, $CellContext`noofsege$508307$$, 0], 
+        Hold[$CellContext`pers$$, $CellContext`pers$508308$$, 0], 
+        Hold[$CellContext`theta$$, $CellContext`theta$508309$$, 0], 
+        Hold[$CellContext`rho$$, $CellContext`rho$508310$$, 0], 
+        Hold[$CellContext`gamma$$, $CellContext`gamma$508311$$, 0], 
+        Hold[$CellContext`core$$, $CellContext`core$508312$$, 0]}, 
+      "OtherVariables" :> {
+       Typeset`show$$, Typeset`bookmarkList$$, Typeset`bookmarkMode$$, 
+        Typeset`animator$$, Typeset`animvar$$, Typeset`name$$, 
+        Typeset`specs$$, Typeset`size$$, Typeset`update$$, Typeset`initDone$$,
+         Typeset`skipInitDone$$}, "Body" :> 
+      LogLinearPlot[{$CellContext`core$$, 
+         NIntegrate[$CellContext`theta$$ $CellContext`g[$CellContext`x, \
+$CellContext`rho$$, $CellContext`gamma$$] (
+            1 - (1 - $CellContext`x)^$CellContext`n), {$CellContext`x, \
+$CellContext`pers$$, 1}] + $CellContext`core$$, 
+         NIntegrate[$CellContext`theta$$ $CellContext`g[$CellContext`x, \
+$CellContext`rho$$, $CellContext`gamma$$], {$CellContext`x, \
+$CellContext`pers$$, 1}] + $CellContext`core$$, 
+         NIntegrate[$CellContext`theta$$ $CellContext`g[$CellContext`x, \
+$CellContext`rho$$, $CellContext`gamma$$] (
+            1 - (1 - $CellContext`x)^$CellContext`n), {$CellContext`x, 0, 
+            1}] + $CellContext`core$$}, {$CellContext`n, 
+         1, $CellContext`noofsege$$}, Filling -> {1 -> 0, 4 -> 0, 2 -> 0}, 
+        FillingStyle -> {
+          Opacity[0.8], Blue}, PlotStyle -> {
+          Directive[Thick, Purple], 
+          Directive[Thick, Blue], 
+          Directive[Blue, Dashed], 
+          Directive[Thick, Black]}, AxesStyle -> Thickness[0.0025], ImageSize -> 
+        Large, PlotRange -> {{1, Automatic}, {0, Automatic}}, 
+        PlotLegends -> {
+         "core", "sampled persistent pangenome", "persistent pangenome size", 
+          "sampled pangenome"}], 
+      "Specifications" :> {{{$CellContext`noofsege$$, 200, 
+          "no of sampled genomes"}, 2, 
+         1000}, {{$CellContext`pers$$, 0.01, 
+          "minimum frequency of persistent genes"}, 0.0001, 0.2}, 
+        Delimiter, {{$CellContext`theta$$, 1000, "gene gain rate"}, 0, 
+         5000}, {{$CellContext`rho$$, 1, "gene loss rate"}, 0, 
+         20}, {{$CellContext`gamma$$, 0, "gene transfer rate"}, 0, 
+         10}, {{$CellContext`core$$, 1500, "core genes"}, 0, 2500}}, 
+      "Options" :> {}, "DefaultOptions" :> {}],
+     ImageSizeCache->{897., {289., 296.}},
+     SingleEvaluation->True],
+    Deinitialization:>None,
+    DynamicModuleValues:>{},
+    SynchronousInitialization->True,
+    UndoTrackedVariables:>{Typeset`show$$, Typeset`bookmarkMode$$},
+    UnsavedVariables:>{Typeset`initDone$$},
+    UntrackedVariables:>{Typeset`size$$}], "Manipulate",
+   Deployed->True,
+   StripOnInput->False],
+  Manipulate`InterpretManipulate[1]]], "Output",
+ CellChangeTimes->{3.6338604938649483`*^9, 3.633872326334585*^9, 
+  3.6348817575184793`*^9, 3.634882870242692*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"Needs", "[", "\"\<BarCharts`\>\"", "]"}], "\[IndentingNewLine]", 
+ RowBox[{"Manipulate", "[", 
+  RowBox[{
+   RowBox[{"GraphicsRow", "[", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"PieChart", "[", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{"core", ",", 
+          RowBox[{"NIntegrate", "[", 
+           RowBox[{
+            RowBox[{"theta", "*", 
+             RowBox[{"g", "[", 
+              RowBox[{"x", ",", "rho", ",", "gamma"}], "]"}], "*", 
+             RowBox[{"(", 
+              RowBox[{"1", "-", 
+               RowBox[{
+                RowBox[{"(", 
+                 RowBox[{"1", "-", "x"}], ")"}], "^", "n"}]}], ")"}]}], ",", 
+            RowBox[{"{", 
+             RowBox[{"x", ",", "pers", ",", "1"}], "}"}]}], "]"}], ",", 
+          RowBox[{"NIntegrate", "[", 
+           RowBox[{
+            RowBox[{"theta", "*", 
+             RowBox[{"g", "[", 
+              RowBox[{"x", ",", "rho", ",", "gamma"}], "]"}], "*", 
+             RowBox[{"(", 
+              RowBox[{"1", "-", 
+               RowBox[{
+                RowBox[{"(", 
+                 RowBox[{"1", "-", "x"}], ")"}], "^", "n"}]}], ")"}]}], ",", 
+            RowBox[{"{", 
+             RowBox[{"x", ",", "0", ",", "pers"}], "}"}]}], "]"}]}], "}"}], 
+        ",", 
+        RowBox[{"ChartLabels", "\[Rule]", 
+         RowBox[{"{", 
+          RowBox[{
+          "\"\<core\>\"", ",", "\"\<shell\>\"", ",", "\"\<cloud\>\""}], 
+          "}"}]}], ",", 
+        RowBox[{"ImageSize", "\[Rule]", "Medium"}], ",", 
+        RowBox[{
+        "PlotLabel", "\[Rule]", " ", 
+         "\"\<Composition of the SAMPLED pangenome\>\""}]}], "]"}], ",", 
+      RowBox[{"PercentileBarChart", "[", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{"NIntegrate", "[", 
+          RowBox[{
+           RowBox[{"theta", "*", 
+            RowBox[{"g", "[", 
+             RowBox[{"x", ",", "rho", ",", "gamma"}], "]"}], "*", 
+            RowBox[{"(", 
+             RowBox[{"1", "-", 
+              RowBox[{
+               RowBox[{"(", 
+                RowBox[{"1", "-", "x"}], ")"}], "^", "n"}]}], ")"}]}], ",", 
+           RowBox[{"{", 
+            RowBox[{"x", ",", "pers", ",", "1"}], "}"}]}], "]"}], "}"}], ",", 
+        
+        RowBox[{"{", 
+         RowBox[{"NIntegrate", "[", 
+          RowBox[{
+           RowBox[{"theta", "*", 
+            RowBox[{"g", "[", 
+             RowBox[{"x", ",", "rho", ",", "gamma"}], "]"}], "*", 
+            RowBox[{
+             RowBox[{"(", 
+              RowBox[{"1", "-", "x"}], ")"}], "^", "n"}]}], ",", 
+           RowBox[{"{", 
+            RowBox[{"x", ",", "pers", ",", "1"}], "}"}]}], "]"}], "}"}], ",", 
+        
+        RowBox[{"BarLabels", " ", "\[Rule]", " ", 
+         RowBox[{"{", "\"\<fraction of persistant genes known\>\"", "}"}]}]}],
+        "]"}]}], "}"}], " ", "]"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+      "pers", ",", "0.01", ",", 
+       "\"\<minimum frequency of persistent genes\>\""}], "}"}], ",", 
+     "0.0001", ",", "0.2"}], "}"}], ",", "Delimiter", ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"theta", ",", "1000", ",", "\"\<gene gain rate\>\""}], "}"}], 
+     ",", "0", ",", "5000"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"rho", ",", "1", ",", "\"\<gene loss rate\>\""}], "}"}], ",", 
+     "0", ",", "20"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"gamma", ",", "0", ",", "\"\<gene transfer rate\>\""}], "}"}], 
+     ",", "0", ",", "10"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"core", ",", "1500", ",", "\"\<core genes\>\""}], "}"}], ",", 
+     "0", ",", "2500"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"n", ",", "10", ",", "\"\<number of sequenced genomes\>\""}], 
+      "}"}], ",", "1", ",", "2000"}], "}"}]}], "]"}]}], "Input",
+ Editable->False,
+ CellOpen->False,
+ CellChangeTimes->{{3.634883397729526*^9, 3.634883404382209*^9}, {
+   3.6348834520269747`*^9, 3.634883488533989*^9}, {3.634883535212582*^9, 
+   3.634883538186084*^9}, {3.634883661146113*^9, 3.634883677014309*^9}, 
+   3.634883740280923*^9, {3.634883969167286*^9, 3.6348841088441973`*^9}, {
+   3.6348841644123917`*^9, 3.634884198811795*^9}, {3.6348842658582373`*^9, 
+   3.6348842812701263`*^9}, {3.634885095458425*^9, 3.63488509891866*^9}, {
+   3.6348852204802513`*^9, 3.634885265391334*^9}, {3.634885461286137*^9, 
+   3.634885514611198*^9}, {3.634885564242766*^9, 3.6348856059140987`*^9}, {
+   3.634885943643261*^9, 3.634886140762846*^9}, {3.634886185560772*^9, 
+   3.634886272629952*^9}, {3.6348863110393677`*^9, 3.634886331092613*^9}, {
+   3.634886382829584*^9, 3.6348864060021544`*^9}, {3.6348864870379267`*^9, 
+   3.634886519012265*^9}, {3.634886580546731*^9, 3.634886581717696*^9}, {
+   3.634886786103417*^9, 3.634886786788553*^9}, {3.634886993678132*^9, 
+   3.6348869977857027`*^9}, {3.634887049056776*^9, 3.634887051085088*^9}, {
+   3.634887087255525*^9, 3.634887145874155*^9}, {3.634887337465537*^9, 
+   3.634887375411812*^9}}],
+
+Cell[BoxData[
+ TagBox[
+  StyleBox[
+   DynamicModuleBox[{$CellContext`core$$ = 1500, $CellContext`gamma$$ = 
+    0, $CellContext`n$$ = 50., $CellContext`pers$$ = 
+    0.01, $CellContext`rho$$ = 1, $CellContext`theta$$ = 1000, 
+    Typeset`show$$ = True, Typeset`bookmarkList$$ = {}, 
+    Typeset`bookmarkMode$$ = "Menu", Typeset`animator$$, Typeset`animvar$$ = 
+    1, Typeset`name$$ = "\"untitled\"", Typeset`specs$$ = {{{
+       Hold[$CellContext`pers$$], 0.01, 
+       "minimum frequency of persistent genes"}, 0.0001, 0.2}, {{
+       Hold[$CellContext`theta$$], 1000, "gene gain rate"}, 0, 5000}, {{
+       Hold[$CellContext`rho$$], 1, "gene loss rate"}, 0, 20}, {{
+       Hold[$CellContext`gamma$$], 0, "gene transfer rate"}, 0, 10}, {{
+       Hold[$CellContext`core$$], 1500, "core genes"}, 0, 2500}, {{
+       Hold[$CellContext`n$$], 10, "number of sequenced genomes"}, 1, 2000}}, 
+    Typeset`size$$ = {780., {192., 198.}}, Typeset`update$$ = 0, 
+    Typeset`initDone$$, Typeset`skipInitDone$$ = 
+    True, $CellContext`pers$689980$$ = 0, $CellContext`theta$689981$$ = 
+    0, $CellContext`rho$689982$$ = 0, $CellContext`gamma$689983$$ = 
+    0, $CellContext`core$689984$$ = 0, $CellContext`n$689985$$ = 0}, 
+    DynamicBox[Manipulate`ManipulateBoxes[
+     1, StandardForm, 
+      "Variables" :> {$CellContext`core$$ = 1500, $CellContext`gamma$$ = 
+        0, $CellContext`n$$ = 10, $CellContext`pers$$ = 
+        0.01, $CellContext`rho$$ = 1, $CellContext`theta$$ = 1000}, 
+      "ControllerVariables" :> {
+        Hold[$CellContext`pers$$, $CellContext`pers$689980$$, 0], 
+        Hold[$CellContext`theta$$, $CellContext`theta$689981$$, 0], 
+        Hold[$CellContext`rho$$, $CellContext`rho$689982$$, 0], 
+        Hold[$CellContext`gamma$$, $CellContext`gamma$689983$$, 0], 
+        Hold[$CellContext`core$$, $CellContext`core$689984$$, 0], 
+        Hold[$CellContext`n$$, $CellContext`n$689985$$, 0]}, 
+      "OtherVariables" :> {
+       Typeset`show$$, Typeset`bookmarkList$$, Typeset`bookmarkMode$$, 
+        Typeset`animator$$, Typeset`animvar$$, Typeset`name$$, 
+        Typeset`specs$$, Typeset`size$$, Typeset`update$$, Typeset`initDone$$,
+         Typeset`skipInitDone$$}, "Body" :> GraphicsRow[{
+         PieChart[{$CellContext`core$$, 
+           
+           NIntegrate[$CellContext`theta$$ $CellContext`g[$CellContext`x, \
+$CellContext`rho$$, $CellContext`gamma$$] (
+             1 - (1 - $CellContext`x)^$CellContext`n$$), {$CellContext`x, \
+$CellContext`pers$$, 1}], 
+           
+           NIntegrate[$CellContext`theta$$ $CellContext`g[$CellContext`x, \
+$CellContext`rho$$, $CellContext`gamma$$] (
+             1 - (1 - $CellContext`x)^$CellContext`n$$), {$CellContext`x, 
+             0, $CellContext`pers$$}]}, 
+          ChartLabels -> {"core", "shell", "cloud"}, ImageSize -> Medium, 
+          PlotLabel -> "Composition of the SAMPLED pangenome"], 
+         BarCharts`PercentileBarChart[{
+           
+           NIntegrate[$CellContext`theta$$ $CellContext`g[$CellContext`x, \
+$CellContext`rho$$, $CellContext`gamma$$] (
+             1 - (1 - $CellContext`x)^$CellContext`n$$), {$CellContext`x, \
+$CellContext`pers$$, 1}]}, {
+           
+           NIntegrate[$CellContext`theta$$ $CellContext`g[$CellContext`x, \
+$CellContext`rho$$, $CellContext`gamma$$] (
+              1 - $CellContext`x)^$CellContext`n$$, {$CellContext`x, \
+$CellContext`pers$$, 1}]}, 
+          BarCharts`BarLabels -> {"fraction of persistant genes known"}]}], 
+      "Specifications" :> {{{$CellContext`pers$$, 0.01, 
+          "minimum frequency of persistent genes"}, 0.0001, 0.2}, 
+        Delimiter, {{$CellContext`theta$$, 1000, "gene gain rate"}, 0, 
+         5000}, {{$CellContext`rho$$, 1, "gene loss rate"}, 0, 
+         20}, {{$CellContext`gamma$$, 0, "gene transfer rate"}, 0, 
+         10}, {{$CellContext`core$$, 1500, "core genes"}, 0, 
+         2500}, {{$CellContext`n$$, 10, "number of sequenced genomes"}, 1, 
+         2000}}, "Options" :> {}, "DefaultOptions" :> {}],
+     ImageSizeCache->{827., {306., 313.}},
+     SingleEvaluation->True],
+    Deinitialization:>None,
+    DynamicModuleValues:>{},
+    SynchronousInitialization->True,
+    UndoTrackedVariables:>{Typeset`show$$, Typeset`bookmarkMode$$},
+    UnsavedVariables:>{Typeset`initDone$$},
+    UntrackedVariables:>{Typeset`size$$}], "Manipulate",
+   Deployed->True,
+   StripOnInput->False],
+  Manipulate`InterpretManipulate[1]]], "Output",
+ CellChangeTimes->{
+  3.634883538680471*^9, 3.634883677966713*^9, 3.634883744119236*^9, {
+   3.634884175055326*^9, 3.63488419944703*^9}, {3.63488426987219*^9, 
+   3.6348842877906837`*^9}, 3.634884317856351*^9, 3.634885101327745*^9, {
+   3.6348852528046627`*^9, 3.63488527199221*^9}, {3.6348854935180073`*^9, 
+   3.634885515271546*^9}, 3.634885600325639*^9, 3.634885946130499*^9, {
+   3.634886028030282*^9, 3.634886107510399*^9}, 3.634886142866712*^9, {
+   3.634886202196165*^9, 3.634886273322545*^9}, 3.634886336544834*^9, {
+   3.634886384539905*^9, 3.6348864084946833`*^9}, 3.634886520893753*^9, 
+   3.6348866002241592`*^9, 3.6348867883307*^9, 3.634887052077641*^9, 
+   3.634887148688078*^9, {3.634887369049148*^9, 3.634887376159849*^9}}]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["How does the expected gene frequency spectrum look like?", "Chapter",
+ CellChangeTimes->{{3.633860607622147*^9, 3.6338606357844133`*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Manipulate", "[", 
+  RowBox[{
+   RowBox[{"ListLogPlot", "[", 
+    RowBox[{
+     RowBox[{"Table", "[", 
+      RowBox[{
+       RowBox[{"NIntegrate", "[", 
+        RowBox[{
+         RowBox[{"theta", "*", 
+          RowBox[{"g", "[", 
+           RowBox[{"x", ",", "rho", ",", "gamma"}], "]"}], "*", 
+          RowBox[{"x", "^", "k"}], "*", 
+          RowBox[{
+           RowBox[{"(", 
+            RowBox[{"1", "-", "x"}], ")"}], "^", 
+           RowBox[{"(", 
+            RowBox[{"n", "-", "k"}], ")"}]}]}], ",", 
+         RowBox[{"{", 
+          RowBox[{"x", ",", "0", ",", "1"}], "}"}]}], "]"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"k", ",", "1", ",", "n"}], "}"}]}], "]"}], ",", 
+     RowBox[{"ImageSize", "\[Rule]", "Large"}], ",", 
+     RowBox[{"Joined", "\[Rule]", "True"}]}], "]"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"n", ",", "10", ",", "\"\<sample size\>\""}], "}"}], ",", "1", 
+     ",", "100"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"theta", ",", "1000", ",", "\"\<gene gain rate\>\""}], "}"}], 
+     ",", "1", ",", "5000"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"rho", ",", "1", ",", "\"\<gene loss rate\>\""}], "}"}], ",", 
+     "0.1", ",", "15"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"gamma", ",", "0", ",", "\"\<gene transfer rate\>\""}], "}"}], 
+     ",", "0", ",", "10"}], "}"}]}], "]"}]], "Input",
+ Editable->False,
+ CellOpen->False,
+ CellChangeTimes->{{3.633777368434318*^9, 3.63377747191086*^9}, {
+  3.633777515534142*^9, 3.633777520345928*^9}, {3.633777974883409*^9, 
+  3.633778017524205*^9}, {3.6337782674316597`*^9, 3.633778293973916*^9}, {
+  3.634882081943375*^9, 3.6348821612957077`*^9}, {3.634882206301684*^9, 
+  3.634882269847775*^9}, {3.6348823743942823`*^9, 3.634882376245619*^9}, {
+  3.634882438213953*^9, 3.6348824384297943`*^9}, {3.634882498075388*^9, 
+  3.634882499917962*^9}, {3.634882548151688*^9, 3.634882574983473*^9}, {
+  3.6348826560326242`*^9, 3.634882656126102*^9}, {3.634882706101451*^9, 
+  3.6348827063095207`*^9}}],
+
+Cell[BoxData[
+ TagBox[
+  StyleBox[
+   DynamicModuleBox[{$CellContext`gamma$$ = 0., $CellContext`n$$ = 
+    10, $CellContext`rho$$ = 0.1, $CellContext`theta$$ = 1000, 
+    Typeset`show$$ = True, Typeset`bookmarkList$$ = {}, 
+    Typeset`bookmarkMode$$ = "Menu", Typeset`animator$$, Typeset`animvar$$ = 
+    1, Typeset`name$$ = "\"untitled\"", Typeset`specs$$ = {{{
+       Hold[$CellContext`n$$], 10, "sample size"}, 1, 100}, {{
+       Hold[$CellContext`theta$$], 1000, "gene gain rate"}, 1, 5000}, {{
+       Hold[$CellContext`rho$$], 1, "gene loss rate"}, 0.1, 15}, {{
+       Hold[$CellContext`gamma$$], 0, "gene transfer rate"}, 0, 10}}, 
+    Typeset`size$$ = {576., {178., 184.}}, Typeset`update$$ = 0, 
+    Typeset`initDone$$, Typeset`skipInitDone$$ = 
+    True, $CellContext`n$447792$$ = 0, $CellContext`theta$447793$$ = 
+    0, $CellContext`rho$447794$$ = 0, $CellContext`gamma$447795$$ = 0}, 
+    DynamicBox[Manipulate`ManipulateBoxes[
+     1, StandardForm, 
+      "Variables" :> {$CellContext`gamma$$ = 0, $CellContext`n$$ = 
+        10, $CellContext`rho$$ = 1, $CellContext`theta$$ = 1000}, 
+      "ControllerVariables" :> {
+        Hold[$CellContext`n$$, $CellContext`n$447792$$, 0], 
+        Hold[$CellContext`theta$$, $CellContext`theta$447793$$, 0], 
+        Hold[$CellContext`rho$$, $CellContext`rho$447794$$, 0], 
+        Hold[$CellContext`gamma$$, $CellContext`gamma$447795$$, 0]}, 
+      "OtherVariables" :> {
+       Typeset`show$$, Typeset`bookmarkList$$, Typeset`bookmarkMode$$, 
+        Typeset`animator$$, Typeset`animvar$$, Typeset`name$$, 
+        Typeset`specs$$, Typeset`size$$, Typeset`update$$, Typeset`initDone$$,
+         Typeset`skipInitDone$$}, "Body" :> ListLogPlot[
+        Table[
+         NIntegrate[$CellContext`theta$$ $CellContext`g[$CellContext`x, \
+$CellContext`rho$$, $CellContext`gamma$$] $CellContext`x^$CellContext`k (
+            1 - $CellContext`x)^($CellContext`n$$ - $CellContext`k), \
+{$CellContext`x, 0, 1}], {$CellContext`k, 1, $CellContext`n$$}], ImageSize -> 
+        Large, Joined -> True], 
+      "Specifications" :> {{{$CellContext`n$$, 10, "sample size"}, 1, 
+         100}, {{$CellContext`theta$$, 1000, "gene gain rate"}, 1, 
+         5000}, {{$CellContext`rho$$, 1, "gene loss rate"}, 0.1, 
+         15}, {{$CellContext`gamma$$, 0, "gene transfer rate"}, 0, 10}}, 
+      "Options" :> {}, "DefaultOptions" :> {}],
+     ImageSizeCache->{623., {260., 267.}},
+     SingleEvaluation->True],
+    Deinitialization:>None,
+    DynamicModuleValues:>{},
+    SynchronousInitialization->True,
+    UndoTrackedVariables:>{Typeset`show$$, Typeset`bookmarkMode$$},
+    UnsavedVariables:>{Typeset`initDone$$},
+    UntrackedVariables:>{Typeset`size$$}], "Manipulate",
+   Deployed->True,
+   StripOnInput->False],
+  Manipulate`InterpretManipulate[1]]], "Output",
+ CellChangeTimes->{{3.6337774599179153`*^9, 3.633777472552867*^9}, {
+   3.6337780136092052`*^9, 3.6337780181705523`*^9}, {3.633778272526441*^9, 
+   3.633778295197534*^9}, 3.6338723271529837`*^9, 3.6348817581282797`*^9, 
+   3.634882272276829*^9, 3.6348823790395947`*^9, 3.634882439593665*^9, {
+   3.634882551197977*^9, 3.6348825766289377`*^9}, 3.634882658916913*^9, 
+   3.634882707470943*^9}]
+}, Open  ]],
+
+Cell[BoxData[""], "Input",
+ CellChangeTimes->{3.634882671438553*^9}]
+}, Open  ]]
+},
+InitializationCellEvaluation->True,
+InitializationCellWarning->False,
+WindowSize->{1278, 940},
+WindowMargins->{{168, Automatic}, {-348, Automatic}},
+PrivateNotebookOptions->{"VersionedStylesheet"->{"Default.nb"[8.] -> False}},
+InitializationCell->True,
+FrontEndVersion->"10.0 for Linux x86 (64-bit) (December 4, 2014)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[579, 22, 189, 4, 66, "Chapter"],
+Cell[771, 28, 362, 9, 19, "Input",
+ CellOpen->False],
+Cell[1136, 39, 598, 19, 22, "Code",
+ CellOpen->False,
+ InitializationCell->True],
+Cell[CellGroupData[{
+Cell[1759, 62, 5885, 141, 19, "Input",
+ CellOpen->False],
+Cell[7647, 205, 4583, 83, 602, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[12267, 293, 5081, 125, 19, "Input",
+ CellOpen->False],
+Cell[17351, 420, 5157, 92, 636, "Output"]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[22557, 518, 143, 1, 66, "Chapter"],
+Cell[CellGroupData[{
+Cell[22725, 523, 2138, 54, 19, "Input",
+ CellOpen->False],
+Cell[24866, 579, 3190, 57, 544, "Output"]
+}, Open  ]],
+Cell[28071, 639, 68, 1, 32, "Input"]
+}, Open  ]]
+}
+]
+*)
+
+(* End of internal cache information *)
