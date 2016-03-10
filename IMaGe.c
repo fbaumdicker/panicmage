@@ -131,7 +131,7 @@ int main( int argc, char* argv[]){
 //   printf("Progname is:\t %s\n", argv[0]);
 //   printf("Number of arguments is:\t %d\n", argc);
   if (argc < 4){
-    printf("missing parameters, expected input is:\n./image [TREEFILE] [GFS_FILE] [INT] ... [OPTIONS]\nfor more info have a look at IMaGe.help.txt\n");
+    printf("missing parameters, expected input is:\n./image [TREEFILE] [GFS_FILE] [INT] ... [OPTIONS]\nfor more info have a look at the readme files\n");
     return -1;
   }
 
