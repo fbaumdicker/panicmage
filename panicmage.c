@@ -7,7 +7,7 @@
  * Author: Franz Baumdicker, baumdicker@stochastik.uni-freiburg.de
  * Author: Peter Pfaffelhuber, pp@stochastik.uni-freiburg.de
  *****************************************************************/
-// compile with g++ IMaGe.c -lm -lgsl -lgslcblas -lcln -lginac -o panicmage
+// compile with g++ panicmage.c -lm -lgsl -lgslcblas -lcln -lginac -o panicmage
 
 
 #include <gsl/gsl_multimin.h>
@@ -829,6 +829,9 @@ printf("The average number of genes present in more than 100 of 10000 individual
 
 printf("The average number of new genes found in the %d'ths individual:\t\t\t%.2f\n\n", leaves+1, theta_hat/(leaves+rho_hat) );
 
+float mysuprasize = theo_suprasize(theta_hat,rho_hat,0.01)+core_hat;
+printf("The persistant pangenome size (average number of genes present in more than 1 percent of the population) is:\t%f\n\n", mysuprasize);
+
 
 // compute the size of the pangenome
 if(pansize_flag == 1){
@@ -843,8 +846,8 @@ effective_popsize =  (uint64_t) ( ( (uint64_t) millgenstoMRCA_input*1000000.)/ n
 printf("The effective population size is given by %" PRIu64 "\n", effective_popsize);
 pansize = theo_curr_pansize_sum(theta_hat, rho_hat, effective_popsize , core_hat);
 printf("The average number of genes in the population (pansize) is:\t%.2f\n", pansize );
-antisuprasize = theo_curr_antisuprasize(theta_hat,rho_hat,effective_popsize, (uint64_t) (effective_popsize/100) );
-printf("The average number of genes present in more than 1 percent of the population is:\t%f\n\n", pansize - antisuprasize);
+// antisuprasize = theo_curr_antisuprasize(theta_hat,rho_hat,effective_popsize, (uint64_t) (effective_popsize/100) );
+// printf("The average number of genes present in more than 1 percent of the population is:\t%f\n\n", pansize - antisuprasize);
 float theta_gen, rho_gen;
 int theta_power = 0, rho_power = 0;
 theta_gen = theta_hat/(2.*effective_popsize);
@@ -862,7 +865,7 @@ printf("per generation rate of gene loss for each gene:\t %f * 10^-%d\n", rho_ge
 }
 else{
 printf("NOTE: no number of generations up to the most recent commen ancestor (MRCA) given.\nPansize and per generation rates are only computable if the paramter -g is given\n");
-printf("To compute the pansize and per generation rates only with the estimated parameters use the parameters:\n -a -t %.5f -r %.5f -c %.2f -g [float]\n where [float] is the number of million generations up to the MRCA \n\n", theta_hat, rho_hat, core_hat);
+printf("To compute the pansize and per generation rates without reestimating parameters use the options:\n -a -t %.5f -r %.5f -c %.2f -g [float]\n where [float] is the number of million generations up to the MRCA \n\n", theta_hat, rho_hat, core_hat);
 }
 
 
