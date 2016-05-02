@@ -76,7 +76,7 @@ void comp_flost (int leaves, float *flost_k,float *fnotlost_k ){
     summe = 0.;
     summe += 1.;  // this is for j=0;
     for (j=1; j < k+1; j++){
-      summe += pow(-1,j) * combinations(k,j) * fnotlost_k[j-1];
+      summe += std::pow(-1,j) * combinations(k,j) * fnotlost_k[j-1];
     }
     flost_k[k-1] = summe;
   }

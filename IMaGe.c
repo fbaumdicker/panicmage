@@ -7,18 +7,19 @@
  * Author: Franz Baumdicker, baumdicker@stochastik.uni-freiburg.de
  * Author: Peter Pfaffelhuber, pp@stochastik.uni-freiburg.de
  *****************************************************************/
-// compile with gcc IMaGe.c source/ran.c -lm -lgsl -lgslcblas -o image
-
+// compile with g++ IMaGe.c -lm -lgsl -lgslcblas -lcln -lginac -o panicmage
 
 
 #include <gsl/gsl_multimin.h>
 #include <gsl/gsl_randist.h>
 #include <gsl/gsl_rng.h>
+#include <ginac/ginac.h>
+using namespace GiNaC;
 #include "source/treestructure.h"
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <math.h>
+#include <cmath>
 #include "source/treefunctions.h"
 #include "source/treeprints.h"
 #include "source/readingtree.h"
@@ -27,6 +28,9 @@
 #include "source/treesamplingbias.h"
 #include <string.h>
 #include <stdint.h>
+#include <inttypes.h>
+#include <iostream>
+#include "source/treesymbolic.h"
 
 
 
@@ -115,8 +119,11 @@ gsl_rng * r;
 
 
 int main( int argc, char* argv[]){
+    
  
-  
+    // this defines the global variable for the paremeter rho (the gene loss rate)
+    symbol x("rhoS");
+   
   /* create a generator chosen by the 
           environment variable GSL_RNG_TYPE */
    gsl_rng_env_setup();
@@ -131,10 +138,9 @@ int main( int argc, char* argv[]){
 //   printf("Progname is:\t %s\n", argv[0]);
 //   printf("Number of arguments is:\t %d\n", argc);
   if (argc < 4){
-    printf("missing parameters, expected input is:\n./image [TREEFILE] [GFS_FILE] [INT] ... [OPTIONS]\nfor more info have a look at the readme files\n");
+    printf("missing parameters, expected input is:\n./panicmage [TREEFILE] [GFS_FILE] [INT] ... [OPTIONS]\nfor more info have a look at the readme files\n");
     return -1;
   }
-
 
 printf("Filename Newick-Tree:\t\t %s\n", argv[1]);
 printf("Filename Gene Frequency Data:\t %s\n", argv[2]);
@@ -206,7 +212,7 @@ printf("Filename Gene Frequency Data:\t %s\n", argv[2]);
   
 
     // Set defaults for all parameters
-    int notest_flag = 0, samplingbias_flag = 0, estimate_flag = 1, skipall_flag = 0, details_flag = 1, printtree_flag = 0, pansize_flag = 0;
+    int notest_flag = 0, samplingbias_flag = 0, estimate_flag = 1, skipall_flag = 0, details_flag = 1, printtree_flag = 0, pansize_flag = 0, oldalgo_flag = 0;
     float theta_input = 0.0, rho_input = 0.0, core_input = 0.0, millgenstoMRCA_input = 0.0;
     int runs_input = 0;
     
@@ -258,7 +264,8 @@ if (details_flag == 1){
 Node * intree;
 
 int n = 2*leaves-1; 
-intree = (Node *)malloc(n*sizeof(Node));
+// intree = (Node *)malloc(n*sizeof(Node));
+intree = new Node[n];
 Node *listofleav[leaves];
 
 int leaveornot = 0, place;
@@ -280,7 +287,6 @@ else{printf("ERROR: ';' in newick tree is missing\n"); return -1;}
 
 // this function parses the newick tree recursive (calls parsenewick(child1) and parsenewick(child2) )
 parsenewick(s1,-1,n,intree,-1);
-
 // if (printtree_flag == 1){
 //  printf("\n--------tree-data---rooted----------------\n"); 
 //  printrootedTree(intree+n-1);
@@ -329,7 +335,6 @@ if (details_flag == 1){
 
 
 
-
 /////////* estimate the real tree height and scale the tree to that size*/////////////
 float treeparts[leaves-1], estimatedheight, scalingfactor, neutraltreeheight;
 rootTree(intree,NULL);
@@ -357,7 +362,96 @@ if (printtree_flag == 1){
 
 
 
-
+// // starting to test the symbolic computation
+// 
+// rootTree(intree,NULL);
+// printf("rooted the tree...\n");
+// unprob_symb(intree);
+// printf("unprobed the tree symbolic\n");
+// computeprobsall_symbolic(intree, leaves, x);
+// 
+// rootTree(intree,NULL);
+// printf("rooted the tree...\n");
+// unprob(intree);
+// printf("unprobed the tree nonsymbolic\n");
+// computeprobsall(intree, leaves, 0.5);
+// 
+// if (printtree_flag == 1){
+//  printf("\n-----scaled--tree---------------------------\n");
+//  rootTree(intree,NULL);
+//  printrootedTree(intree);
+//  printf("-------------------------------------------\n");
+// }
+// 
+// 
+// //   rootTree(intree,NULL);
+// //   unprob_symb(intree);
+// //   computeprobsall_symbolic(intree,leaves,x);
+// //   rootTree(intree,NULL);
+//    ex *theogfs_symb;
+// // //   theogfs = (float *)malloc(anzahl*sizeof(float)); // this is old c code and does no longer work with c++ and ginac
+//    theogfs_symb = new ex[leaves];
+// //   treegfs_symbolic_slow(intree,leaves,theogfs_symb,x);
+// // 
+// // //printgfs_thin_symb(theogfs_symb,leaves);
+// // 
+//  int inc = 0;
+// // for (inc = 0; inc < leaves; inc++){
+// //  theogfs_symb[inc] =  theogfs_symb[inc].subs(x == 0.5).evalf();
+// // }
+// // printgfs_thin_symb(theogfs_symb,leaves);
+// 
+// 
+// 
+// //   rootTree(intree,NULL);
+// //   unprob(intree);
+// //   computeprobsall(intree,leaves,0.5);
+// //   rootTree(intree,NULL);
+//    float *theogfs_numeric;
+// // //   theogfs = (float *)malloc(anzahl*sizeof(float));
+//    theogfs_numeric = new float[leaves];
+// //   treegfs(intree,leaves,theogfs_numeric,0.5);
+// //   printgfs(theogfs_numeric,leaves,1.0,0.5);
+// // 
+// // 
+// // printf("Done\n");
+// 
+// 
+// 
+// // try to compute the gfs in a clever way:
+// rootTree(intree,NULL);
+// initialize_tree(intree,leaves);
+// check_probs(intree,leaves,x);
+// 
+// printf("_____________________________\n");
+// comp_pkfhs(intree,leaves,x);
+// check_probs(intree,leaves,x);
+// 
+//    ex *theogfs_symb_fast;
+//    theogfs_symb_fast = new ex[leaves];
+//   treegfs_symbolic_fast(intree,leaves,theogfs_symb_fast,x);
+//   for (inc = 0; inc < leaves; inc++){
+//     theogfs_symb_fast[inc] =  theogfs_symb_fast[inc].subs(x == 0.5).evalf();
+//   }
+//   printgfs_thin_symb(theogfs_symb_fast,leaves);
+//   printf("_--------------------------------------\n");
+//   printgfs_thin_symb(theogfs_symb,leaves);
+//   printf("_--------------------------------------\n");
+//    printgfs(theogfs_numeric,leaves,1.0,0.5);
+//   
+//   
+//   for (inc = 0; inc < leaves; inc++){
+//    theogfs_numeric[inc] = to_double(ex_to<numeric>(theogfs_symb_fast[inc].subs(x == 0.5).evalf()));
+//   }
+//   
+//   printf("_--------------------------------------\n");
+//   printgfs(theogfs_numeric,leaves,1.0,1.0);
+// 
+// 
+// 
+// //return 0;
+// 
+// // end to test the symbolic computation
 
 
 
@@ -372,14 +466,22 @@ if (printtree_flag == 1){
   
   //////////////////////* estimate theta and rho *///////////////////////////////////////////////
   Params *para;
-  para = malloc(sizeof(Params) + leaves * sizeof(double));
+  para = (struct Params *) malloc(sizeof(Params) + leaves * sizeof(double));
   para->anzahl = leaves;
   para->tree = intree;
+
+  
+  Params_symbolic *paraS;
+  paraS = new Params_symbolic;
+  paraS->anzahl = leaves;
+  paraS->rhoS = x;
+  
 
   // the numbers for the gfs from input
   int i;
   for(i=0; i<leaves; i++){
     para->datagfs[i] = input_gfs[i];
+    paraS->datagfs[i] = input_gfs[i];
   }
   
     // -t or -r or -c is set to custom value
@@ -401,18 +503,40 @@ if (printtree_flag == 1){
 if (skipall_flag == 0) {
 
 
+  ex *theogfs_symb_fast;
+  theogfs_symb_fast = new ex[leaves];
+    
   // only estimate if -t or -r or -c is not set to custom value
   if (estimate_flag == 1){
     printf("Estimating theta and rho...this may take some time\n");
-    estimate(&theta_hat,&rho_hat,para);
+    if (oldalgo_flag == 1){
+      estimate(&theta_hat,&rho_hat,para);
+    }
+    else{
+//compute the symbolic formula in advance      
+// do this only once and give the functions to my_f_symbolic
+  rootTree(intree,NULL);
+  unprob_symb(intree);
+  initialize_tree(intree,leaves);
+//   cout << "We did get past the initialize tree\n";
+//   check_probs(tree,anzahl,para->rhoS);
+  comp_pkfhs(intree,leaves,x);
+//    cout << "We computed the probabillties within the tree\n";
+//   check_probs(tree,anzahl,para->rhoS)
+  treegfs_symbolic_fast(intree,leaves,theogfs_symb_fast,x);
+  for(i=0; i<leaves; i++){
+    paraS->symbolicgfs[i] = theogfs_symb_fast[i];
   }
-
+// cout << "We successfully called treegfs_symbolic_fast\n";        
+      estimate_symbolic(&theta_hat,&rho_hat,paraS);
+    }
+  }
   //////////////////* END estimate theta and rho*//////////////////////////////////////////
 
 
   printf("parameters for neutral evolution:\t theta = %f \t rho = %f\n\n\n" , theta_hat , rho_hat ); 
 
-
+// return 0;
   
   
   ///////////////* compute chisquare like statistic  *///////////////////////////
@@ -423,15 +547,21 @@ if (skipall_flag == 0) {
   // compute the expected GFS
   theoGfs_core(estimated_gfs_theo,leaves,theta_hat,rho_hat,0.);
 
-  /*compute probabilities for estimated theta and rho*/
+//   /*compute probabilities for estimated theta and rho*/  //i can now do that much faster (see below)
+//   rootTree(intree,NULL);
+//   unprob(intree);
+//   computeprobsall(intree,leaves,rho_hat);
+//   rootTree(intree,NULL);
+//   // compute the GFS given the tree
+//   treegfs(intree,leaves,est_gfs_giventree_theo,rho_hat);  //this is not fast
   rootTree(intree,NULL);
-  unprob(intree);
-  computeprobsall(intree,leaves,rho_hat);
-  rootTree(intree,NULL);
-
-  // compute the GFS given the tree
-  treegfs(intree,leaves,est_gfs_giventree_theo,rho_hat);
-
+  treegfs_symbolic_fast(intree,leaves,theogfs_symb_fast,x);
+  int inc;
+  for (inc = 0; inc < leaves; inc++){
+     est_gfs_giventree_theo[inc] = to_double(ex_to<numeric>(theogfs_symb_fast[inc].subs(x == rho_hat).evalf()));
+  }
+  
+  
 
   if (details_flag == 1){
     printf("Estimated GFS:\n");
@@ -497,7 +627,7 @@ if (skipall_flag == 0) {
 
 
 
-//compute pairdiffs here as intree might be scaled to another height during the sampling bias test result. result is printed at the end.
+//compute pairdiffs here in advance as intree might be scaled to another height later (during the sampling bias test result). result is printed at the end.
  float pairdiffs;
  pairdiffs = differentgenesinapair_giventhetree(intree, leaves, theta_hat, rho_hat)/2.0;
 
@@ -663,29 +793,6 @@ if (skipall_flag == 0){
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // printing some characteristics
 
 
@@ -700,7 +807,7 @@ printf("For each fixed tree this number is still the same: \t\t\t\t%.2f\n\n", th
 // printf("Expected number of different genes in a pair taken from the tree: %.2f \n", pairdiffs);
 
 printf("The average number of genes in two individuals:\t\t\t\t\t%.2f\n", theta_hat/rho_hat + theta_hat/(rho_hat+1.) + core_hat);  //== theo_curr_pansize_sum(theta_hat, rho_hat, 2 , core_hat)
-printf("Expected number of genes within two individuals taken from fixed tree:\t\t%.2f\n\n", theta_hat/rho_hat + 0.5*pairdiffs + core_hat);
+printf("Expected number of genes within two individuals taken from the given tree:\t\t%.2f\n\n", theta_hat/rho_hat + 0.5*pairdiffs + core_hat);
 
 printf("The average number of genes in %d individuals:\t\t\t\t\t%.2f\n",leaves, theo_curr_pansize_sum(theta_hat, rho_hat, leaves , core_hat) );
 
@@ -733,7 +840,7 @@ if (millgenstoMRCA_input < 1.0){
 else{
 effective_popsize =  (uint64_t) ( ( (uint64_t) millgenstoMRCA_input*1000000.)/ neutraltreeheight );
 }
-printf("The effective population size is given by %llu\n", effective_popsize);
+printf("The effective population size is given by %" PRIu64 "\n", effective_popsize);
 pansize = theo_curr_pansize_sum(theta_hat, rho_hat, effective_popsize , core_hat);
 printf("The average number of genes in the population (pansize) is:\t%.2f\n", pansize );
 antisuprasize = theo_curr_antisuprasize(theta_hat,rho_hat,effective_popsize, (uint64_t) (effective_popsize/100) );

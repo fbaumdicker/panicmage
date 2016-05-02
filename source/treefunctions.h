@@ -159,7 +159,7 @@ float computeProbs(Node *node, Node *child, float rho){
 	    factor = 1.0;
 	    factor = factor * computeProbs(child,child->child1,rho);
 	    factor = factor * computeProbs(child,child->child2,rho);
-	    node->lossprob1 = ( 1-exp(-rho/2*(node->length1)) ) + exp(-rho/2*(node->length1)) * factor;
+	    node->lossprob1 = ( 1-std::exp(-rho/2*(node->length1)) ) + std::exp(-rho/2*(node->length1)) * factor;
 	    return node->lossprob1;
 	}
       }
@@ -169,7 +169,7 @@ float computeProbs(Node *node, Node *child, float rho){
 	    factor = 1.0;
 	    factor = factor * computeProbs(child,child->child1,rho);
 	    factor = factor * computeProbs(child,child->child2,rho);
-	    node->lossprob2 = ( 1-exp(-rho/2*(node->length2)) ) + exp(-rho/2*(node->length2)) * factor;
+	    node->lossprob2 = ( 1-std::exp(-rho/2*(node->length2)) ) + std::exp(-rho/2*(node->length2)) * factor;
 	    return node->lossprob2;
 	  
 	}
@@ -180,7 +180,7 @@ float computeProbs(Node *node, Node *child, float rho){
 	    factor = 1.0;
 	    factor = factor * computeProbs(child,child->child1,rho);
 	    factor = factor * computeProbs(child,child->child2,rho);
-	    node->lossprob3 = ( 1-exp(-rho/2*(node->length3)) ) + exp(-rho/2*(node->length3)) * factor;
+	    node->lossprob3 = ( 1-std::exp(-rho/2*(node->length3)) ) + std::exp(-rho/2*(node->length3)) * factor;
 	    return node->lossprob3;
 	  
 	}
@@ -242,7 +242,7 @@ void koutofn(int feld[],int n,int k,int pos,int val, Node *tree, float *zeiger, 
       int *subtree;
       subtree = feld;
       sublength = marksubtree(subtree,subn,tree);
-      keepprob = exp(-rho/2*sublength);
+      keepprob = std::exp(-rho/2*sublength);
       lossprob = totalloss(tree,n);
       *zeiger += keepprob*lossprob;
       //printf("keepprob:\t %.2f \t lossprob: \t %.5f \t product: \t %.5f \n", keepprob, lossprob, keepprob*lossprob);
@@ -435,6 +435,47 @@ void maketree(Node *tree, Node **list, int leaves){
   rootTree(tree,NULL);
 }
 
+
+// empty tree this function deletes any information which is given in the tree.
+// just used for debugging
+void emptytree(Node *node){  // node should be root to unprob whole tree
+  int inc;
+  if (node != NULL){
+      node->lossprob1 = -1; node->lossprob2 = -1; node->lossprob3 = -1;
+      if (node->child1) unprob(node->child1);
+      if (node->child2) unprob(node->child2);
+      node->id = 0;
+//   struct Node *parent;
+  node->parent = NULL;
+  node->child1 = NULL;
+  node->child2 = NULL;
+  node->neighbor1 = NULL;
+  node->neighbor2 = NULL;
+  node->neighbor3 = NULL;
+  
+  node->symblossprob1 = 0;
+  for(inc = 0;inc < 500; inc++){
+    node->pkfh1[inc] = 0;
+  }
+  node->lossprob1 = 0;
+  node->length1 = 0;
+  node->symblossprob2 = 0;
+  for(inc = 0;inc < 500; inc++){
+    node->pkfh2[inc] = 0;
+  }
+  node->lossprob2 = 0;
+  node->length2 = 0;
+  node->symblossprob3 = 0;
+  for(inc = 0;inc < 500; inc++){
+    node->pkfh3[inc] = 0;
+  }
+  node->lossprob3 = 0;
+  node->length3 = 0;
+  node->marker = 0;
+  node->disttoroot = 0;
+  node->compdone = 0;
+    }
+}
 
 
 // enlarges the branches in order to test for sampling bias

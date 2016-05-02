@@ -19,6 +19,18 @@ void comp_fnotlost (int leaves, float *fnotlost_k, float rho, unsigned long int 
 void comp_flost (int leaves, float *flost_k,float *fnotlost_k );
 void comp_gfs_bias (int leaves, float *gfs_bias_theo, float *gfs_theo, float *flost_k, float *fnotlost_k, float theta, float rho, float core);
 
+void initialize_tree(Node *node, int leaves);
+void comp_pkfhs(Node *node, int leaves, const ex & rhoS);
+void check_probs(Node *node, int leaves, const ex & rhoS);
+void treegfs_symbolic_fast(Node *tree, int leaves, ex *gfs_k_symb, const ex & rhoS);
+
+void initialize_tree_numeric(Node *node, int leaves);
+void comp_pkfhs_numeric(Node *node, int leaves, float myrho);
+void treegfs_numeric_fast(Node *tree, int leaves, float *gfs_k_numeric, float myrho);
+
+
+
+
 
 
 // distance function according to least square
@@ -26,7 +38,7 @@ double lsqu(float *gfs, float *theogfs, int anzahl,float t,float r){
   double sum = 0.0;
   int i;
   for(i=0;i<anzahl;++i)
-    sum += pow((gfs[i]-theogfs[i]*t/r),2);
+    sum += std::pow((gfs[i]-theogfs[i]*t/r),2);
   return sum;
 }
 
@@ -35,7 +47,7 @@ double llh(float *gfs, float *theogfs, int anzahl, float t, float r){
   double sum = 0.0;
   int i;
   for(i=0; i<anzahl; i++)
-    sum += theogfs[i]*t/r - gfs[i] * log(theogfs[i]*t/r);
+    sum += theogfs[i]*t/r - gfs[i] * std::log(theogfs[i]*t/r);
   return sum;
 }
 
@@ -100,6 +112,8 @@ float differentgenesinapair_giventhetree(Node *tree, int leaves, float theta, fl
 /*------------function which is minimized-----------------------------------*/
 double my_f (const gsl_vector *v, void *params)
 {
+  cout << "This is the OLD function. I should not be here... STOPPING:\n";
+  return 0;
   double rho, theta, sum = 0.;
   Params *para = (Params *)params;
        
@@ -255,7 +269,7 @@ float comp_chissquare(float *datagfs, float *gfs_theo, int leaves){
   chi_square = 0.;
   for(jdex = 0; jdex<leaves-1; jdex++){
     if (gfs_theo[jdex] == 0.) printf("WARNING: zero in denominator at j = %d \n", jdex);
-    chi_square += pow( (datagfs[jdex] - gfs_theo[jdex]) , 2.)  / (gfs_theo[jdex]);
+    chi_square += std::pow( (datagfs[jdex] - gfs_theo[jdex]) , 2.)  / (gfs_theo[jdex]);
   }
   return chi_square;
 }
@@ -301,30 +315,88 @@ void creategenenumbers(int leaves, float *gfs_mean , float *randoms, float theta
 
 
 
+void simonetree(float *gfs_sim,int leaves,float rho_hat){
+  
+	int n;
+	n = 2*leaves-1; 
+        symbol localx("localrho");
+        Node *list[leaves];
+	Node * tree;
+        tree = new Node[n];
 
+     maketree(tree,list,leaves);   
+     
+     
+  rootTree(tree,NULL);
+  initialize_tree(tree,leaves);
+//   cout << "initialized ok\n";
+//   check_probs(tree,anzahl,para->rhoS);
+  comp_pkfhs(tree,leaves,localx);
+//    cout << "We computed the probabillties within the tree\n";
+//   check_probs(tree,anzahl,para->rhoS)
+  ex *theogfs_fast_local;
+  theogfs_fast_local = new ex[leaves];
+//   cout << "so far ok\n";
+  treegfs_symbolic_fast(tree,leaves,theogfs_fast_local,localx);
+//    cout << "treegfs_symbolic_fast is ok\n";
+  int i;
+  for (i = 0; i < leaves; i++){
+     gfs_sim[i] = to_double(ex_to<numeric>(theogfs_fast_local[i].subs(localx == rho_hat).evalf()));
+  }
+  
+  delete [] tree;
+  delete [] theogfs_fast_local;
+  return;
+}
+
+
+
+
+
+
+void simonetree_numeric(float *gfs_sim,int leaves,float rho_hat){ 
+	int n;
+	n = 2*leaves-1; 
+        Node *list[leaves];
+	Node * tree;
+        tree = new Node[n]; 
+
+     maketree(tree,list,leaves);   
+
+     
+     
+  rootTree(tree,NULL);
+//   cout << "rooted ok\n";
+  initialize_tree_numeric(tree,leaves);
+//   cout << "We did get past the initialize tree\n";
+  comp_pkfhs_numeric(tree,leaves,rho_hat);
+//    cout << "We computed the probabillties within the tree\n";
+  float *theogfs_fast_local;
+  theogfs_fast_local = new float[leaves];
+  treegfs_numeric_fast(tree,leaves,gfs_sim,rho_hat);
+  
+  delete [] tree;
+  delete [] theogfs_fast_local;
+  return;
+}
 
 
 
 float compquality_without_estimating(int leaves, float true_theta, float true_rho, int runs, char *filename, float data_chisquare, int details){
 
   //  printf("Compute Quality of estimators:\n");
-
+  
   float pvalue = 0.;
-  int n;
-  n = 2*leaves-1; 
-
-  Node *tree;
-  tree = (Node *)malloc(n*sizeof(Node));
 
   float *gfs_sim, *randoms;
-  gfs_sim = (float *)malloc(leaves*sizeof(float));
-  randoms = (float *)malloc(leaves*sizeof(float));  
+  gfs_sim = new float[leaves];
+  randoms = new float[leaves];
 
   float *gfs_theo, *pies;
   float sumpies,chi_square,chi_square2;
-
-  gfs_theo = (float *)malloc(leaves*sizeof(float));  
-  pies = (float *)malloc((leaves-1)*sizeof(float));  
+ 
+  gfs_theo = new float[leaves];
+  pies = new float[leaves];
 
   FILE *CHI_output;
   CHI_output = fopen( filename, "w");
@@ -340,37 +412,43 @@ float compquality_without_estimating(int leaves, float true_theta, float true_rh
   if (runs < 10) steps = 1;
   if (details == 0) steps = runs + 1;
   int idex;
+  
+  printf("0%%|");
+  for(idex = 0; idex< 100; idex++){         
+     printf(".");
+  }
+  printf("|100%%\n0%%|");
 
   float explength = expectedtreeheight(leaves), reallength;
   //  printf("expected length of tree for %d individuals is: \t%f\n", leaves, explength);
 
   int j;
-  Node *list[leaves];
+//   Node *list[leaves];
 
-  Params *para;
-  para = malloc(sizeof(Params) + leaves * sizeof(double));
+//   Params *para;
+//   para = (struct Params * )malloc(sizeof(Params) + leaves * sizeof(double));
 
   float theta_hat, rho_hat;
 
+      Node *tree;
+//       tree = 0;
+//       tree = new Node[n];
+  int i;
+  
   // simulate the distribution of the chi square like statistic
   for(idex = 0; idex< runs; idex++){         
-     /* create a random coalescent tree*/
-     free(tree);
-     tree = (Node *)malloc(n*sizeof(Node));
-     maketree(tree,list,leaves);
+
+//     simonetree(gfs_sim,leaves,true_rho);   // this works as well but is probably slower than the numeric computation
+    simonetree_numeric(gfs_sim,leaves,true_rho);    
+      
      
-     /* compute parameters of the poisson distribution*/
-     rootTree(tree,NULL);
-     unprob(tree);
-     computeprobsall(tree,leaves,true_rho);
-     rootTree(tree,NULL);
-     treegfs(tree,leaves,gfs_sim,true_rho);
+//      cout << "so far okidoki\n";
 
      /* create random gfs for this tree*/
      creategenenumbers(leaves,gfs_sim,randoms,true_theta,true_rho);
-
      
       //      ESTIMATION IS NOT DONE
+      //    (this is the old and thus slow algo, be carefull if reactivated)
       // 	this part estimates new parameters for each random tree
       //      /* estimate theta and rho based on the current tree*/
       // 	free(para);
@@ -423,7 +501,7 @@ float compquality_without_estimating(int leaves, float true_theta, float true_rh
      
      // print the simulated GFS in GFS.sims
      for(j=0; j<leaves-1; j++){
-	 fprintf(GFS_output, "%.1f\t" ,randoms[j]);
+        fprintf(GFS_output, "%.1f\t" ,randoms[j]);
      }
      fprintf(GFS_output, "%.1f\n" , randoms[leaves-1]);
      fflush(GFS_output);
@@ -431,10 +509,18 @@ float compquality_without_estimating(int leaves, float true_theta, float true_rh
      if (chi_square > data_chisquare) pvalue += 1.;
      
      
-     if (!((idex+1) % steps) )  printf("%d\n", idex+1);
+//      if (!((idex+1) % steps) )  printf("%d\n", idex+1);
+     if (!((idex+1) % steps) ){
+        printf(".");
+        fflush(stdout);
+     }
+        
+//      rootTree(tree,NULL);
+//      emptytree(tree);
   }
 
-  // printf("\n");
+  printf("|100%%\n");
+  fflush(stdout);
 
   fclose(CHI_output);
   // fclose(CHI_output2);
@@ -443,6 +529,9 @@ float compquality_without_estimating(int leaves, float true_theta, float true_rh
   pvalue = pvalue/((float)runs);
   return pvalue;
 }
+
+
+
 
 
 
@@ -501,7 +590,7 @@ float compquality_without_estimating_samplingbias(int leaves, float true_theta, 
   Node *list[leaves];
 
   Params *para;
-  para = malloc(sizeof(Params) + leaves * sizeof(double));
+  para = (struct Params * )malloc(sizeof(Params) + leaves * sizeof(double));
 
   float theta_hat, rho_hat;
 
@@ -541,6 +630,7 @@ float compquality_without_estimating_samplingbias(int leaves, float true_theta, 
       enlargebranches(tree,leaves, generate_random_enlargementsize(leaves, 10000) );
       
       /* compute parameters of the poisson distribution*/
+//       TODO this should as well be replaced by the fast algorithm
       rootTree(tree,NULL);
       unprob(tree);
       computeprobsall(tree,leaves,true_rho);
