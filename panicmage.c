@@ -43,7 +43,7 @@ using namespace GiNaC;
 //parse the commandline for options
 
 
-  int get_args(int argc, char** argv, int* notest_flag, int* samplingbias_flag,  float* theta_value, float* rho_value, float* core_value, int* estimate_flag, int* details_flag, int* skipall_flag, int* runs_input, int* printtree_flag, int* pansize_flag, float* millgenerationstoMRCA)
+  int get_args(int argc, char** argv, int* notest_flag, int* samplingbias_flag,  float* theta_value, float* rho_value, float* core_value, int* estimate_flag, int* details_flag, int* skipall_flag, int* runs_input, int* printtree_flag, int* pansize_flag, float* millgenerationstoMRCA, int* scale_flag)
 {
     int i;
 
@@ -88,6 +88,9 @@ using namespace GiNaC;
 				break;
 				
 		case 'a':	*skipall_flag = 1;
+				break;
+								
+		case 'b':	*scale_flag = 0;
 				break;
 				
 		case 'p':	*printtree_flag = 1;
@@ -209,15 +212,16 @@ printf("Filename Gene Frequency Data:\t %s\n", argv[2]);
 //   -q quantity of runs for the tests is set to custom number
 //   -a skip all but the results for a typical population
 //   -p print tree
+//   -b scaling of the tree is skipped
   
 
     // Set defaults for all parameters
-    int notest_flag = 0, samplingbias_flag = 0, estimate_flag = 1, skipall_flag = 0, details_flag = 1, printtree_flag = 0, pansize_flag = 0, oldalgo_flag = 0;
+    int notest_flag = 0, samplingbias_flag = 0, estimate_flag = 1, skipall_flag = 0, details_flag = 1, printtree_flag = 0, pansize_flag = 0, oldalgo_flag = 0, scale_flag = 1;
     float theta_input = 0.0, rho_input = 0.0, core_input = 0.0, millgenstoMRCA_input = 0.0;
     int runs_input = 0;
     
     
-    if ( get_args(argc, argv, &notest_flag, &samplingbias_flag, &theta_input, &rho_input, &core_input, &estimate_flag, &details_flag, &skipall_flag, &runs_input, &printtree_flag, &pansize_flag, &millgenstoMRCA_input ) == -1 ){
+    if ( get_args(argc, argv, &notest_flag, &samplingbias_flag, &theta_input, &rho_input, &core_input, &estimate_flag, &details_flag, &skipall_flag, &runs_input, &printtree_flag, &pansize_flag, &millgenstoMRCA_input, &scale_flag ) == -1 ){
       printf("something was wrong with your options, maybe you wrote '-t200' instead of '-t 200' ?\n");
       return -1;
     }
@@ -254,7 +258,6 @@ if (details_flag == 1){
 //////////////* END reading parameters  *//////////////////////////////
   
 
-  
   
   
   
@@ -315,41 +318,56 @@ float depth;
 depth = findmaxdepth(intree,leaves);
 
 if (details_flag == 1) printf("Tree height is: %.2f\t", treeheight(intree,leaves));
+  ////////////////////*END parsing the newick tree*//////////////////////////
 
+
+
+
+  /////////* estimate the real tree height and scale the tree to that size*/////////////
 
 float wantedheight;
 wantedheight = expectedtreeheight(leaves);
 
-if (details_flag == 1){
-  printf("Scale factor is thus: %.4f\n", (wantedheight*2.)/depth);
-  printf("Scaling the tree to it's expected length...\n");
-}
-
-scalerootedtree(intree,(wantedheight*2.)/depth);
-
-if (details_flag == 1){
-  printf("tree height is now: %.2f\t which equals the expected height of a tree with %d leaves\n",treeheight(intree,leaves), leaves);
-  printf("\n\n");
-}
-////////////////////*END parsing the newick tree*//////////////////////////
-
-
-
-/////////* estimate the real tree height and scale the tree to that size*/////////////
 float treeparts[leaves-1], estimatedheight, scalingfactor, neutraltreeheight;
-rootTree(intree,NULL);
-if (details_flag == 1) printf("Estimating the real tree height based on the newick file:\n");
-scalingfactor = estimate_treeheight_short(intree,leaves,treeparts,0);
-estimatedheight = scalingfactor*treeheight(intree,leaves);
-neutraltreeheight = estimatedheight;
-if (details_flag == 1){
-  printf("Faktor is: %.2f\n", scalingfactor);
-  printf("Estimated Height is: %.2f\n", estimatedheight);
+
+if (scale_flag == 1){
+  
+  if (details_flag == 1){
+    printf("Scale factor is thus: %.4f\n", (wantedheight*2.)/depth);
+    printf("Scaling the tree to it's expected length...\n");
+  }
+
+  scalerootedtree(intree,(wantedheight*2.)/depth);
+
+  if (details_flag == 1){
+    printf("tree height is for the moment: %.2f\t which equals the expected height of a tree with %d leaves\n",treeheight(intree,leaves), leaves);
+    printf("\n\n");
+  }
+
+
+
+
+
+  
+  rootTree(intree,NULL);
+  if (details_flag == 1) printf("Estimating the real tree height based on the newick file:\n");
+  scalingfactor = estimate_treeheight_short(intree,leaves,treeparts,0);
+  estimatedheight = scalingfactor*treeheight(intree,leaves);
+  neutraltreeheight = estimatedheight;
+  if (details_flag == 1){
+    printf("Faktor is: %.2f\n", scalingfactor);
+    printf("Estimated Height is: %.2f\n", estimatedheight);
+  }
+  rootTree(intree,NULL);
+  scalerootedtree(intree,scalingfactor);
 }
 rootTree(intree,NULL);
-scalerootedtree(intree,scalingfactor);
-rootTree(intree,NULL);
-if (details_flag == 1) printf("New tree height is now: %.2f\n",treeheight(intree,leaves));
+if (details_flag == 1){
+  printf("Tree height is now: %.2f\n",treeheight(intree,leaves));
+  if (scale_flag == 0){
+    printf("Tree has not been scaled\n");
+  }
+}
 
 //////////////////////* END estimate the real tree height and scale the tree to that size////////////////////////////////
 
@@ -457,7 +475,7 @@ if (printtree_flag == 1){
 
   // initialize parameters
   float theta_hat , rho_hat, core_hat;
-  float pvalue;
+  float pvalue,pvalue_samplingbias;
 
   theta_hat = 0.;
   rho_hat = 0.;
@@ -652,18 +670,20 @@ if (skipall_flag == 0){
 
 
     /* estimate the real tree height and scale the tree to that size*/
-    rootTree(intree,NULL);
-    scalingfactor = estimate_treeheight_short(intree,leaves,treeparts,1);
-    estimatedheight = scalingfactor*treeheight(intree,leaves);
-    samplingtreeheight = estimatedheight;
-    if (details_flag == 1){
-      printf("Faktor is: %.2f\n", scalingfactor);
-      printf("Estimated Height is: %.2f\n", estimatedheight);
+    if(scale_flag == 1){
+      rootTree(intree,NULL);
+      scalingfactor = estimate_treeheight_short(intree,leaves,treeparts,1);
+      estimatedheight = scalingfactor*treeheight(intree,leaves);
+      samplingtreeheight = estimatedheight;
+      if (details_flag == 1){
+	printf("Faktor is: %.2f\n", scalingfactor);
+	printf("Estimated Height is: %.2f\n", estimatedheight);
+      }
+      rootTree(intree,NULL);
+      scalerootedtree(intree,scalingfactor);
+      rootTree(intree,NULL);
+      if (details_flag == 1) printf("New tree height is now: %.2f\n",treeheight(intree,leaves));
     }
-    rootTree(intree,NULL);
-    scalerootedtree(intree,scalingfactor);
-    rootTree(intree,NULL);
-    if (details_flag == 1) printf("New tree height is now: %.2f\n",treeheight(intree,leaves));
 
     
     /* estimate theta_samplingbias and rho_samplingbias */ 
@@ -780,10 +800,10 @@ if (skipall_flag == 0){
     if (details_flag == 1) printf("%d runs will be done:\n", runs);
     
     char samplingoutputname[] = "sims/chis_samplingbias.sim";
-    pvalue = compquality_without_estimating_samplingbias(leaves, theta_hat_samplingbias, rho_hat_samplingbias, runs,  samplingoutputname, data_chi_square_samplingbias, details_flag);
+    pvalue_samplingbias = compquality_without_estimating_samplingbias(leaves, theta_hat_samplingbias, rho_hat_samplingbias, runs,  samplingoutputname, data_chi_square_samplingbias, details_flag);
 
-    if   (pvalue <0.05) printf("\n\nThe hypothesis of neutral evolution + sampling bias is not very probable. p-value is %.5f\n\n", pvalue);
-    else printf("\n\nThe hypothesis of neutral evolution + sampling bias is not rejected as the p-value is %.3f\n\n", pvalue);
+    if   (pvalue_samplingbias <0.05) printf("\n\nThe hypothesis of neutral evolution + sampling bias is not very probable. p-value is %.5f\n\n", pvalue_samplingbias);
+    else printf("\n\nThe hypothesis of neutral evolution + sampling bias is not rejected as the p-value is %.3f\n\n", pvalue_samplingbias);
   }
 
   ///////////////// END Sampling Bias Test ////////////////////////////////////////////
@@ -866,6 +886,21 @@ printf("per generation rate of gene loss for each gene:\t %f * 10^-%d\n", rho_ge
 else{
 printf("NOTE: no number of generations up to the most recent commen ancestor (MRCA) given.\nPansize and per generation rates are only computable if the paramter -g is given\n");
 printf("To compute the pansize and per generation rates without reestimating parameters use the options:\n -a -t %.5f -r %.5f -c %.2f -g [float]\n where [float] is the number of million generations up to the MRCA \n\n", theta_hat, rho_hat, core_hat);
+}
+
+
+
+// printing some results to file
+
+FILE *RESULT_output;
+RESULT_output = fopen("panicmage_estimatedparameters.txt","w");
+fprintf(RESULT_output, "%.10f\t%.10f\t%.2f\n", theta_hat, rho_hat, core_hat);
+fclose(RESULT_output);
+
+if (notest_flag == 0){
+  RESULT_output = fopen("panicmage_pvalue.txt","w");
+  fprintf(RESULT_output, "%.2f\n", pvalue);
+  fclose(RESULT_output);
 }
 
 
