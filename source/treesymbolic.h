@@ -606,17 +606,17 @@ void estimate_symbolic(float *theta_hat, float *rho_hat, Params_symbolic *paraS)
        if (firstrho > 20.) firstrho = 20.;
        if (firstrho < 0.1) firstrho = 0.1;
        if (firsttheta > 10000.) firsttheta = 10000.;
-       if (firsttheta < 50.) firsttheta = 50;
+       if (firsttheta < 5.) firsttheta = 5.;
        
        
        /* Starting point */
        x = gsl_vector_alloc (2);
        
-        gsl_vector_set (x, 0, 1.);  // fixed starting point rho  
-        gsl_vector_set (x, 1, 2000.0); // fixed starting point theta
+//         gsl_vector_set (x, 0, 1.);  // fixed starting point rho  
+//         gsl_vector_set (x, 1, 2000.0); // fixed starting point theta
        
-//        gsl_vector_set (x, 0, firstrho);  // estimated starting point rho
-//        gsl_vector_set (x, 1, firsttheta); // estimated starting point theta
+       gsl_vector_set (x, 0, firstrho);  // estimated starting point rho
+       gsl_vector_set (x, 1, firsttheta); // estimated starting point theta
 
        //        printf("firsttheta = %.0f\tfirstrho = %.2f\n",firsttheta, firstrho);
        
