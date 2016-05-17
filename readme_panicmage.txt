@@ -1,24 +1,24 @@
-MANUAL FOR IMaGe
+MANUAL FOR panicmage
 
 INSTALLATION  (LINUX)
 
 extract all files to any directory
 
-For IMaGe the GNU Scientific Library (GSL) -- development package  (libgsl0-dev) is needed, please install it.
+For panicmage the GNU Scientific Library (GSL) -- development package  (libgsl0-dev) is needed, please install it.
 
 compile with 
 
-"gcc IMaGe.c -lm -lgsl -lgslcblas -o image"
+"g++ panicmage.c -lm -lgsl -lgslcblas -lcln -lginac -o panicmage"
 
 
-you may now run IMaGe from commandline with
+you may now run panicmage from commandline with
 
 ./image [TREEFILE] [GFS_FILE] [INT] ... [OPTIONS]
 
 
 [TREEFILE] 
   Has to be the tree your analysis is based on.
-  IMaGe accepts only files in Newick format.
+  Panicmage accepts only files in Newick format.
   The tree must contain the distances between the nodes and should be rooted.
   Only ultrametric trees will give meaningful results!
   I.e. the distances between each pair of individuals have to equal.
@@ -48,14 +48,16 @@ you may now run IMaGe from commandline with
 
   -p  -> the tree (scaled to the estimated height) is printed
 
-  -n  -> no neutraliy test is done. Normally IMaGe will test whether neutrality holds or not. If this option is set the neutrality test is skipped.
+  -n  -> no neutraliy test is done. Normally panicmage will test whether neutrality holds or not. If this option is set the neutrality test is skipped.
 
-  -s  -> test for sampling bias is done. Normally IMaGe will not test whether the gene frequency spectrum is typical for a neutral evolving population,
+  -s  -> test for sampling bias is done. Normally panicmage will not test whether the gene frequency spectrum is typical for a neutral evolving population,
 	 where samples have not been drawn randomly. If this option is set sampling bias is tested.
   
   -q [INT] -> set the quantity of runs for the tests. Standard value is 10.000 runs.
 
   -a  -> all tests and estimations are skipped, only the theoretical results for a population with given parameters are shown. You have to set the parameters theta and rho
+  
+  -b  -> no rescaling of the supported tree is done
 
 
 Setting the parameters to custom values:

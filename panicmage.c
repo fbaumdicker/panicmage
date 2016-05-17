@@ -1,8 +1,11 @@
-/***** IMaGe.c ***********************************************
- * Description:  IMaGe estimates the parameters of the infinitely many genes modell for given data
+/***** panicmage.c ***********************************************
+ * Description:  panicmage estimates the parameters of the infinitely many genes model for given datasets
  * and performs statistical tests on neutral genome evolution and sampling bias.
  * Expected values for various values of interest may be computed (Pangenome size, expected number of new genes in the next individual etc.)
- * How to cite: if you use IMaGe please cite Baumdicker,Pfaffelhuber,Hess ...
+ * How to cite: if you use panicmage please cite
+ * Baumdicker, F., Hess, W. R., & Pfaffelhuber, P. (2010). The diversity of a distributed genome in bacterial populations. The Annals of Applied Probability, 20(5), 1567–1606.
+ * or
+ * Baumdicker, F., Hess, W. R., & Pfaffelhuber, P. (2012). The infinitely many genes model for the distributed genome of bacteria. Genome Biology and Evolution, 4(4), 443–456. doi:10.1093/gbe/evs016
  * this is Version 1.1
  * Author: Franz Baumdicker, baumdicker@stochastik.uni-freiburg.de
  * Author: Peter Pfaffelhuber, pp@stochastik.uni-freiburg.de
@@ -851,6 +854,9 @@ printf("The average number of new genes found in the %d'ths individual:\t\t\t%.2
 
 float mysuprasize = theo_suprasize(theta_hat,rho_hat,0.01)+core_hat;
 printf("The persistant pangenome size (average number of genes present in more than 1 percent of the population) is:\t%f\n\n", mysuprasize);
+
+
+printf("If you used panicmage please cite: Baumdicker, F., Hess, W. R., & Pfaffelhuber, P. (2012). The infinitely many genes model for the distributed genome of bacteria. Genome Biology and Evolution, 4(4), 443–456.");
 
 
 // compute the size of the pangenome
