@@ -112,6 +112,7 @@ float differentgenesinapair_giventhetree(Node *tree, int leaves, float theta, fl
 /*------------function which is minimized-----------------------------------*/
 double my_f (const gsl_vector *v, void *params)
 {
+  extern int g_includecoreflag;
   cout << "This is the OLD function. I should not be here... STOPPING:\n";
   return 0;
   double rho, theta, sum = 0.;
@@ -140,7 +141,12 @@ double my_f (const gsl_vector *v, void *params)
   }
  
   //return lsqu(datagfs,theogfs,anzahl-1,theta,rho);
-  return llh(datagfs, theogfs, anzahl-1,theta,rho);
+  //return llh(datagfs, theogfs, anzahl-1,theta,rho);
+  if(g_includecoreflag == 1){
+    return llh(datagfs, theogfs, anzahl,theta,rho);
+  }else{
+    return llh(datagfs, theogfs, anzahl-1,theta,rho);
+  }
 }
 
 

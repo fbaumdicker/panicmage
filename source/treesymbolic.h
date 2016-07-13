@@ -475,6 +475,7 @@ void treegfs_numeric_fast(Node *tree, int leaves, float *gfs_k_numeric, float my
 /*------------function which is minimized-----------------------------------*/
 double my_f_symbolic (const gsl_vector *v, void *params)
 {
+  extern int g_includecoreflag;
   double rho, theta, sum = 0.;
   Params_symbolic *para = (Params_symbolic *)params;
        
@@ -527,7 +528,11 @@ double my_f_symbolic (const gsl_vector *v, void *params)
  
   //return lsqu(datagfs,theogfs,anzahl-1,theta,rho);
 //   cout << "This is the llh:" <<  llh(datagfs, theogfs_float, anzahl-1,theta,rho) << "\n";
-  return llh(datagfs, theogfs_float, anzahl-1,theta,rho);
+  if(g_includecoreflag == 1){
+    return llh(datagfs, theogfs_float, anzahl,theta,rho);
+  }else{
+    return llh(datagfs, theogfs_float, anzahl-1,theta,rho);
+  }
 }
 
 

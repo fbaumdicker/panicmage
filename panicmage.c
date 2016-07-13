@@ -36,6 +36,9 @@ using namespace GiNaC;
 #include "source/treesymbolic.h"
 
 
+int g_includecoreflag = 0;
+
+
 
 
 
@@ -94,6 +97,9 @@ using namespace GiNaC;
 				break;
 								
 		case 'b':	*scale_flag = 0;
+				break;
+				
+		case 'z':	g_includecoreflag = 1;
 				break;
 				
 		case 'p':	*printtree_flag = 1;
