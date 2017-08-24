@@ -4,7 +4,11 @@ INSTALLATION  (LINUX)
 
 extract all files to any directory
 
-For panicmage the GNU Scientific Library (GSL) -- development package  (libgsl0-dev) is needed, please install it.
+For panicmage the GNU Scientific Library (GSL) -- development package  (libgsl-dev) is needed, please install it.
+In addition the following packages are needed:
+ginac-tools
+libginac-dev
+
 
 compile with 
 
