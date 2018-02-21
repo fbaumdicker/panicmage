@@ -65,7 +65,7 @@ float readidlength(char *idlength_input, int place, int parent, Node *tree, int 
       //static int innerid;
       char *ptr;
       
-      char idlength[5000], str1[5000], str2[5000];
+      char idlength[50000], str1[50000], str2[50000];
       strcpy(idlength, idlength_input);
       // start reading idlength
       char trennzeichen[] = ":";
@@ -185,7 +185,7 @@ int splitchilds(char *childs, char *child1, char *child2){
 
 void parsenewick(char *s1 , int parent , int n, Node *tree, int sec_child){
 int leaveornot = 0;
-char childs[5000], idlength[5000], child1[5000], child2[5000];
+char childs[50000], idlength[50000], child1[50000], child2[50000];
 int place,numchilds;
 float nodelength;
 
