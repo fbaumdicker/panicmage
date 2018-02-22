@@ -10,9 +10,12 @@ ginac-tools
 libginac-dev
 
 
-compile with 
+compile with
 
-"g++ panicmage.c -lm -lgsl -lgslcblas -lcln -lginac -o panicmage"
+"g++ panicmage.c -st -lm -lgsl -lgslcblas -lcln -lginac -o panicmage"
+
+
+or "g++ -std=c++11 panicmage.c -st -lm -lgsl -lgslcblas -lcln -lginac -o panicmage" if gcc is < 6.0.
 
 
 you may now run panicmage from commandline with
