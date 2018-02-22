@@ -419,6 +419,7 @@ void addtogfs(Node *node, int leaves, ex *zeiger, const ex & rhoS, int k){
 void treegfs_symbolic_fast(Node *tree, int leaves, ex *gfs_k_symb, const ex & rhoS){
   int k;
   ex *zeiger;
+//   printf("called treegfs_symbolic_fast\n");
   for(k = 1; k <= leaves; k++){
 //     printf("%d aus %d\n", k, leaves);
     zeiger = &gfs_k_symb[k-1];
@@ -507,6 +508,7 @@ double my_f_symbolic (const gsl_vector *v, void *params)
   float *theogfs_float;
   theogfs_float = new float[anzahl];
   for (inc = 0; inc < anzahl; inc++){
+//      printf("%d\n",inc);
      theogfs_float[inc] = to_double(ex_to<numeric>(mysymbolicgfs[inc].subs(para->rhoS == rho).evalf()));
   }
   
@@ -593,7 +595,7 @@ void estimate_symbolic(float *theta_hat, float *rho_hat, Params_symbolic *paraS)
        int status;
        double size;
        
-//        cout << "soweit alles ok\n";
+//        cout << "so far fine\n";
        
        /*optional set the starting points to a first simple estimate*/
        
@@ -651,14 +653,14 @@ void estimate_symbolic(float *theta_hat, float *rho_hat, Params_symbolic *paraS)
      
            if (status == GSL_SUCCESS)
              {
-//                printf ("converged to minimum at\n");
+               printf("converged to minimum at\n");
              }
      
-//         printf ("%5d %10.3e %10.3e f() = %7.3f size = %.3f\n", 
-//                    iter,
-//                    gsl_vector_get (s->x, 0), 
-//                    gsl_vector_get (s->x, 1), 
-//                    s->fval, size);
+        printf ("%5zu %10.3e %10.3e f() = %7.3f size = %.3f\n", 
+                   iter,
+                   gsl_vector_get (s->x, 0), 
+                   gsl_vector_get (s->x, 1), 
+                   s->fval, size);
          }
        while(status == GSL_CONTINUE && iter < 100);
        

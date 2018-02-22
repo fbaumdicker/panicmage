@@ -542,19 +542,25 @@ if (skipall_flag == 0) {
     else{
 //compute the symbolic formula in advance      
 // do this only once and give the functions to my_f_symbolic
+  cout << "Initializing the tree structure...\n";
   rootTree(intree,NULL);
   unprob_symb(intree);
   initialize_tree(intree,leaves);
+  cout << "done.\nComputing probabilities along the tree...\n";
 //   cout << "We did get past the initialize tree\n";
 //   check_probs(tree,anzahl,para->rhoS);
   comp_pkfhs(intree,leaves,x);
+  cout << "done.\nEstimation of theta and rho...\n";
 //    cout << "We computed the probabillties within the tree\n";
 //   check_probs(tree,anzahl,para->rhoS)
   treegfs_symbolic_fast(intree,leaves,theogfs_symb_fast,x);
   for(i=0; i<leaves; i++){
     paraS->symbolicgfs[i] = theogfs_symb_fast[i];
+//     printf("\n\n\n\n");
+//     cout << theogfs_symb_fast[i];
   }
-// cout << "We successfully called treegfs_symbolic_fast\n";        
+  
+//  cout << "We successfully called treegfs_symbolic_fast\n";        
       estimate_symbolic(&theta_hat,&rho_hat,paraS);
     }
   }
