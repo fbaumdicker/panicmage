@@ -530,8 +530,11 @@ if (printtree_flag == 1){
 if (skipall_flag == 0) {
 
 
-  ex *theogfs_symb_fast;
-  theogfs_symb_fast = new ex[leaves];
+//   ex *theogfs_symb_fast;
+//   theogfs_symb_fast = new ex[leaves];
+  float *theogfs_fast;
+  theogfs_fast = new float[leaves];
+    
     
   // only estimate if -t or -r or -c is not set to custom value
   if (estimate_flag == 1){
@@ -540,28 +543,53 @@ if (skipall_flag == 0) {
       estimate(&theta_hat,&rho_hat,para);
     }
     else{
-//compute the symbolic formula in advance      
-// do this only once and give the functions to my_f_symbolic
+// // // // //         // this part works well for smaller trees
+// //compute the symbolic formula in advance      
+// // do this only once and give the functions to my_f_symbolic
+//   cout << "Initializing the tree structure...\n";
+//   rootTree(intree,NULL);
+//   unprob_symb(intree);
+//   initialize_tree(intree,leaves);
+//   cout << "done.\nComputing probabilities along the tree...\n";
+// //   cout << "We did get past the initialize tree\n";
+// //   check_probs(tree,anzahl,para->rhoS);
+//   comp_pkfhs(intree,leaves,x);
+//   cout << "done.\nEstimation of theta and rho...\n";
+// //    cout << "We computed the probabillties within the tree\n";
+// //   check_probs(tree,anzahl,para->rhoS)
+//   treegfs_symbolic_fast(intree,leaves,theogfs_symb_fast,x);
+//   for(i=0; i<leaves; i++){
+//     paraS->symbolicgfs[i] = theogfs_symb_fast[i];
+// //     printf("\n\n\n\n");
+// //     cout << theogfs_symb_fast[i];
+// // // // //         
+        
+        
+// // // // // //   this part works faster for larger trees
+// //compute the pkfhs and the gfs along the tree during estimation
+// this is faster than using the symbolic structure where many formulas appear many times
+// my_f_numeric will need the tree to compute the pkfhs along the tree
   cout << "Initializing the tree structure...\n";
   rootTree(intree,NULL);
-  unprob_symb(intree);
-  initialize_tree(intree,leaves);
-  cout << "done.\nComputing probabilities along the tree...\n";
+  unprob(intree);
+  initialize_tree_numeric(intree,leaves);
+  cout << "done.\nTesting to computing probabilities along the tree...\n";
 //   cout << "We did get past the initialize tree\n";
 //   check_probs(tree,anzahl,para->rhoS);
-  comp_pkfhs(intree,leaves,x);
+  comp_pkfhs_numeric(intree,leaves,2.8);
   cout << "done.\nEstimation of theta and rho...\n";
 //    cout << "We computed the probabillties within the tree\n";
 //   check_probs(tree,anzahl,para->rhoS)
-  treegfs_symbolic_fast(intree,leaves,theogfs_symb_fast,x);
-  for(i=0; i<leaves; i++){
-    paraS->symbolicgfs[i] = theogfs_symb_fast[i];
-//     printf("\n\n\n\n");
-//     cout << theogfs_symb_fast[i];
-  }
+//   treegfs_symbolic_fast(intree,leaves,theogfs_symb_fast,x);
+//   for(i=0; i<leaves; i++){
+//     paraS->symbolicgfs[i] = theogfs_symb_fast[i];
+// //     printf("\n\n\n\n");
+// //     cout << theogfs_symb_fast[i];
+//   }
+  // // // // //    
   
 //  cout << "We successfully called treegfs_symbolic_fast\n";        
-      estimate_symbolic(&theta_hat,&rho_hat,paraS);
+      estimate_numeric(&theta_hat,&rho_hat,para);
     }
   }
   //////////////////* END estimate theta and rho*//////////////////////////////////////////
@@ -588,11 +616,15 @@ if (skipall_flag == 0) {
 //   // compute the GFS given the tree
 //   treegfs(intree,leaves,est_gfs_giventree_theo,rho_hat);  //this is not fast
   rootTree(intree,NULL);
-  treegfs_symbolic_fast(intree,leaves,theogfs_symb_fast,x);
-  int inc;
-  for (inc = 0; inc < leaves; inc++){
-     est_gfs_giventree_theo[inc] = to_double(ex_to<numeric>(theogfs_symb_fast[inc].subs(x == rho_hat).evalf()));
-  }
+//   treegfs_symbolic_fast(intree,leaves,theogfs_symb_fast,x); // this is fast but can only very slowly be evaluated
+  unprob(intree);
+  initialize_tree_numeric(intree,leaves);
+  comp_pkfhs_numeric(intree,leaves,rho_hat);
+  treegfs_numeric_fast(intree,leaves,theogfs_fast,rho_hat);
+//   int inc;
+//   for (inc = 0; inc < leaves; inc++){
+//      est_gfs_giventree_theo[inc] = to_double(ex_to<numeric>(theogfs_symb_fast[inc].subs(x == rho_hat).evalf()));
+//   }
   
   
 
@@ -602,7 +634,8 @@ if (skipall_flag == 0) {
     printf("Input GFS:\n");
     printgfs(input_gfs,leaves,1.,1.);
     printf("Estimated GFS given the tree:\n");
-    printgfs(est_gfs_giventree_theo,leaves,theta_hat,rho_hat);
+//     printgfs(est_gfs_giventree_theo,leaves,theta_hat,rho_hat);
+    printgfs(theogfs_fast,leaves,theta_hat,rho_hat);
   }
 
 

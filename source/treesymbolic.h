@@ -540,6 +540,59 @@ double my_f_symbolic (const gsl_vector *v, void *params)
 
 
 
+double my_f_numeric (const gsl_vector *v, void *params)
+{
+  extern int g_includecoreflag;
+//   cout << "This is the numeric estimation...\n";
+  double rho, theta, sum = 0.;
+  Params *para = (Params *)params;
+       
+  int anzahl = para->anzahl;
+  Node *tree = para->tree;
+  
+  rho = gsl_vector_get(v, 0); 
+  theta = gsl_vector_get(v, 1);
+  
+  rootTree(tree,NULL);
+  unprob(tree);
+  initialize_tree_numeric(tree,anzahl);
+  comp_pkfhs_numeric(tree,anzahl,rho);
+  
+  
+//   rootTree(tree,NULL);
+  float *theogfs;
+  theogfs = (float *)malloc(anzahl*sizeof(float));
+//   treegfs(tree,anzahl,theogfs,rho);
+  treegfs_numeric_fast(tree,anzahl,theogfs,rho);
+  
+  float *datagfs;
+  datagfs = (float *)malloc(anzahl*sizeof(float));
+  
+  int i;
+  for (i = 0; i < anzahl; i++) {
+    datagfs[i] = para->datagfs[i];
+  }
+ 
+  //return lsqu(datagfs,theogfs,anzahl-1,theta,rho);
+  //return llh(datagfs, theogfs, anzahl-1,theta,rho);
+  if(g_includecoreflag == 1){
+    return llh(datagfs, theogfs, anzahl,theta,rho);
+  }else{
+    return llh(datagfs, theogfs, anzahl-1,theta,rho);
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
 // // try to compute the gfs in a clever way:
 // rootTree(intree,NULL);
@@ -684,6 +737,114 @@ void estimate_symbolic(float *theta_hat, float *rho_hat, Params_symbolic *paraS)
 
 
 
+
+
+
+
+/*estimate the parameters theta and rho using the numeric precomputation
+ of pkfhs (probabilities to keep from here in k individuals) */
+
+// Params are:
+// Params *para;
+// para = malloc(sizeof(Params) + number * sizeof(double));
+// para->anzahl = number;
+// para->tree = tree;
+// }
+
+void estimate_numeric(float *theta_hat, float *rho_hat, Params *para){   
+           
+       const gsl_multimin_fminimizer_type *T = gsl_multimin_fminimizer_nmsimplex2;
+       gsl_multimin_fminimizer *s = NULL;
+       gsl_vector *ss, *x;
+       gsl_multimin_function minex_func;
+     
+       size_t iter = 0;
+       int status;
+       double size;
+       
+       /*optional set the starting points to a first simple estimate*/
+       
+       int i, n;
+       float c1, c2, firsttheta, firstrho;
+       c1 = 0.;
+       c2 = 0.;
+       n = para->anzahl;
+       for (i = 0; i < n; i++){
+       c1 += (i+1.)/n * para->datagfs[i];
+       c2 += (i+1.)*(n-i-1.)/(n*(n-1.)) * para->datagfs[i];
+       }
+       firstrho = c2/(c1-c2);
+       firsttheta = c2 + firstrho*c2;
+       if (firstrho > 20.) firstrho = 20.;
+       if (firstrho < 0.1) firstrho = 0.1;
+       if (firsttheta > 10000.) firsttheta = 10000.;
+       if (firsttheta < 50.) firsttheta = 50;
+       
+       
+       /* Starting point */
+       x = gsl_vector_alloc (2);
+       
+//         gsl_vector_set (x, 0, 1.);  // fixed starting point rho  
+//         gsl_vector_set (x, 1, 2000.0); // fixed starting point theta
+       
+       gsl_vector_set (x, 0, firstrho);  // estimated starting point rho
+       gsl_vector_set (x, 1, firsttheta); // estimated starting point theta
+
+       //        printf("firsttheta = %.0f\tfirstrho = %.2f\n",firsttheta, firstrho);
+       
+     
+       /* Set initial step sizes to 1 */
+       ss = gsl_vector_alloc (2);
+       gsl_vector_set_all (ss, 1.0);
+     
+       /* Initialize method and iterate */
+       minex_func.n = 2;
+       minex_func.f = my_f_numeric;
+       minex_func.params = para;
+     
+       s = gsl_multimin_fminimizer_alloc (T, 2);
+       gsl_multimin_fminimizer_set (s, &minex_func, x, ss);
+     
+       do
+         {
+           iter++;
+           status = gsl_multimin_fminimizer_iterate(s);
+           
+           if (status) 
+             break;
+     
+           size = gsl_multimin_fminimizer_size (s);
+           status = gsl_multimin_test_size (size, 1e-1);
+     
+           if (status == GSL_SUCCESS)
+             {
+               printf ("converged to minimum at\n");
+             }
+     
+        printf ("%5zu %10.3e %10.3e f() = %7.3f size = %.3f\n", 
+                   iter,
+                   gsl_vector_get (s->x, 0), 
+                   gsl_vector_get (s->x, 1), 
+                   s->fval, size);
+         }
+       while(status == GSL_CONTINUE && iter < 100);
+       
+//        printf("\n");
+       if (iter != 100) {
+     theta_hat[0] = (float) gsl_vector_get (s->x, 1);
+     rho_hat[0]   = (float) gsl_vector_get (s->x, 0);
+       }
+       else {
+     printf("WARNING: minimizer did not converge: \t size: %.2f \t\t theta: %.2f \t\t rho: %.2f\n", size, (float) gsl_vector_get (s->x, 1),  (float) gsl_vector_get (s->x, 0) );
+//   theta_hat[0] = 0;
+//   rho_hat[0] = 0;
+     theta_hat[0] = (float) gsl_vector_get (s->x, 1);
+     rho_hat[0]   = (float) gsl_vector_get (s->x, 0);
+       }
+       gsl_vector_free(x);
+       gsl_vector_free(ss);
+       gsl_multimin_fminimizer_free (s);
+}
 
 
 
