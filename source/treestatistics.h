@@ -58,13 +58,14 @@ void theoGfs_core (float *gfs, int nsam, float theta, float rho, float core) {
   int k,l;
   float l2;
   for (k = 1; k <= nsam; k++){
-    gfs[k-1] = theta/((float) k );
+    gfs[k-1] =  std::log(theta/((float) k ) );
     for( l = nsam; l >= nsam-k+1; l--){
-     gfs[k-1] *= l;
+     gfs[k-1] += std::log(l);
     }
     for( l2 = ((float)nsam)-1.+rho ; l2 > ((float)nsam)-k+rho-0.5; l2 -= 1.){
-      gfs[k-1] *= 1./l2;
+      gfs[k-1] += std::log(1./l2);
     }
+    gfs[k-1] = std::exp(gfs[k-1]);
   }
   gfs[nsam-1] = gfs[nsam-1]+core;  
   // R code to do the same
