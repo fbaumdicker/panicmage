@@ -532,8 +532,6 @@ if (skipall_flag == 0) {
 
 //   ex *theogfs_symb_fast;
 //   theogfs_symb_fast = new ex[leaves];
-  float *theogfs_fast;
-  theogfs_fast = new float[leaves];
     
     
   // only estimate if -t or -r or -c is not set to custom value
@@ -620,7 +618,7 @@ if (skipall_flag == 0) {
   unprob(intree);
   initialize_tree_numeric(intree,leaves);
   comp_pkfhs_numeric(intree,leaves,rho_hat);
-  treegfs_numeric_fast(intree,leaves,theogfs_fast,rho_hat);
+  treegfs_numeric_fast(intree,leaves,est_gfs_giventree_theo,rho_hat);
 //   int inc;
 //   for (inc = 0; inc < leaves; inc++){
 //      est_gfs_giventree_theo[inc] = to_double(ex_to<numeric>(theogfs_symb_fast[inc].subs(x == rho_hat).evalf()));
@@ -635,7 +633,7 @@ if (skipall_flag == 0) {
     printgfs(input_gfs,leaves,1.,1.);
     printf("Estimated GFS given the tree:\n");
 //     printgfs(est_gfs_giventree_theo,leaves,theta_hat,rho_hat);
-    printgfs(theogfs_fast,leaves,theta_hat,rho_hat);
+    printgfs(est_gfs_giventree_theo,leaves,theta_hat,rho_hat);
   }
 
 
