@@ -132,7 +132,7 @@ void printfloats(float feld[],int anzahl){
 void printgfs(float feld[],int anzahl,float t, float r){
   int i;
      for(i=0;i<anzahl;++i)
-         printf( "%4.10f\t", feld[i]*t/r);
+         printf( "%4.1f\t", feld[i]*t/r);
      printf("\n");
 }
 
