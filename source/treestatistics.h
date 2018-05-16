@@ -19,10 +19,11 @@ void comp_fnotlost (int leaves, float *fnotlost_k, float rho, unsigned long int 
 void comp_flost (int leaves, float *flost_k,float *fnotlost_k );
 void comp_gfs_bias (int leaves, float *gfs_bias_theo, float *gfs_theo, float *flost_k, float *fnotlost_k, float theta, float rho, float core);
 
-void initialize_tree(Node *node, int leaves);
-void comp_pkfhs(Node *node, int leaves, const ex & rhoS);
-void check_probs(Node *node, int leaves, const ex & rhoS);
-void treegfs_symbolic_fast(Node *tree, int leaves, ex *gfs_k_symb, const ex & rhoS);
+// this part was used in a previous symbolic version
+// void initialize_tree(Node *node, int leaves);
+// void comp_pkfhs(Node *node, int leaves, const ex & rhoS);
+// void check_probs(Node *node, int leaves, const ex & rhoS);
+// void treegfs_symbolic_fast(Node *tree, int leaves, ex *gfs_k_symb, const ex & rhoS);
 
 void initialize_tree_numeric(Node *node, int leaves);
 void comp_pkfhs_numeric(Node *node, int leaves, float myrho);
@@ -322,44 +323,6 @@ void creategenenumbers(int leaves, float *gfs_mean , float *randoms, float theta
 
 
 
-void simonetree(float *gfs_sim,int leaves,float rho_hat){
-  
-	int n;
-	n = 2*leaves-1; 
-        symbol localx("localrho");
-        Node *list[leaves];
-	Node * tree;
-        tree = new Node[n];
-
-     maketree(tree,list,leaves);   
-     
-     
-  rootTree(tree,NULL);
-  initialize_tree(tree,leaves);
-//   cout << "initialized ok\n";
-//   check_probs(tree,anzahl,para->rhoS);
-  comp_pkfhs(tree,leaves,localx);
-//    cout << "We computed the probabillties within the tree\n";
-//   check_probs(tree,anzahl,para->rhoS)
-  ex *theogfs_fast_local;
-  theogfs_fast_local = new ex[leaves];
-//   cout << "so far ok\n";
-  treegfs_symbolic_fast(tree,leaves,theogfs_fast_local,localx);
-//    cout << "treegfs_symbolic_fast is ok\n";
-  int i;
-  for (i = 0; i < leaves; i++){
-     gfs_sim[i] = to_double(ex_to<numeric>(theogfs_fast_local[i].subs(localx == rho_hat).evalf()));
-  }
-  
-  delete [] tree;
-  delete [] theogfs_fast_local;
-  return;
-}
-
-
-
-
-
 
 void simonetree_numeric(float *gfs_sim,int leaves,float rho_hat){ 
 	int n;
@@ -445,7 +408,7 @@ float compquality_without_estimating(int leaves, float true_theta, float true_rh
   // simulate the distribution of the chi square like statistic
   for(idex = 0; idex< runs; idex++){         
 
-//     simonetree(gfs_sim,leaves,true_rho);   // this works as well but is probably slower than the numeric computation
+//     simonetree(gfs_sim,leaves,true_rho);   // this works as well but is slower than the numeric computation it was used in a previous version
     simonetree_numeric(gfs_sim,leaves,true_rho);    
       
      

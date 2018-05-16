@@ -11,7 +11,7 @@
 #include <math.h>
 #include <iostream>
 using namespace std;
-using namespace GiNaC;
+// using namespace GiNaC;
 
 
 void printprobs(Node *node){
@@ -64,30 +64,7 @@ void printlengths(Node *node){
 
 
 
-void printsymbprobs(Node *node){
-  ex pp,c1p,c2p;
-  int one = 0, two = 0, three=0;
-  if (node->neighbor1 == node->parent) {pp = node->symblossprob1 ; one = 1;}
-  else if (node->neighbor2 == node->parent)  {pp = node->symblossprob2 ; two = 1;}
-  else if (node->neighbor3 == node->parent)  {pp = node->symblossprob3 ; three = 1;}
-  else {printf("WARNING: parent is not a neighbor\n"); }
-  
-  if (node->neighbor1 == node->child1)  {c1p = node->symblossprob1 ; one = 1;}
-  else if (node->neighbor2 == node->child1)  {c1p = node->symblossprob2 ; two = 1;}
-  else if (node->neighbor3 == node->child1) {c1p = node->symblossprob3 ; three = 1;}
-  else {printf("WARNING: child1 is not a neighbor\n"); }
-  
-  if (node->neighbor1 == node->child2) {c2p = node->symblossprob1 ; one = 1;}
-  else if (node->neighbor2 == node->child2) {c2p = node->symblossprob2 ; two = 1;}
-  else if (node->neighbor3 == node->child2) {c2p = node->symblossprob3 ; three = 1;}
-  else {printf("WARNING: child2 is not a neighbor\n"); }
-  
-  if (one+two+three != 3 && (node->child1) && (node->child2) ) printf("WARNING: relatives != neighbors\n");
-  
-  //printf("id: \t %d \t dist: %.2f \t lossp: \t %.2f  \t lossp: \t %.2f  \t lossp: \t %.2f \n", node->id, node->disttoroot , pp, c1p, c2p);
-  printf("id: \t %d \t dist: %.2f \t", node->id, node->disttoroot);
-  cout << " lossp: \t " << pp.evalf() << "\t lossp: \t " << c1p.evalf()  << " \t lossp: \t " << c2p.evalf()  << endl;
-}
+
 
 
 
@@ -103,7 +80,7 @@ void printrootedTree(Node *node) {
     printf("id: \t %d \t marked: %d \t parent: \t %d  \t child1: \t %d  \t child2: \t %d \n", i, node->marker , p, c1, c2);
     printprobs(node);
     printlengths(node);
-    printsymbprobs(node);
+//     printsymbprobs(node);
     printf("\n");
     printrootedTree(node->child1);
     printrootedTree(node->child2);
@@ -138,10 +115,3 @@ void printgfs(float feld[],int anzahl,float t, float r){
 
 
 
-void printgfs_thin_symb(ex feld[],int anzahl){
-  int i;
-     for(i=0;i<anzahl;++i)
-//          printf( "%4.1f\t", feld[i]*t/r);
-       cout << feld[i] << " \t\t\t ";
-     printf("\n");
-}

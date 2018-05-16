@@ -16,8 +16,8 @@
 #include <gsl/gsl_multimin.h>
 #include <gsl/gsl_randist.h>
 #include <gsl/gsl_rng.h>
-#include <ginac/ginac.h>
-using namespace GiNaC;
+// #include <ginac/ginac.h>
+// using namespace GiNaC;
 #include "source/treestructure.h"
 #include <stddef.h>
 #include <stdio.h>
@@ -33,7 +33,8 @@ using namespace GiNaC;
 #include <stdint.h>
 #include <inttypes.h>
 #include <iostream>
-#include "source/treesymbolic.h"
+// #include "source/treesymbolic.h"
+#include "source/treenumeric.h"
 
 
 int g_includecoreflag = 0;
@@ -133,8 +134,7 @@ gsl_rng * r;
 int main( int argc, char* argv[]){
     
  
-    // this defines the global variable for the paremeter rho (the gene loss rate)
-    symbol x("rhoS");
+
    
   /* create a generator chosen by the 
           environment variable GSL_RNG_TYPE */
@@ -498,17 +498,17 @@ if (printtree_flag == 1){
   para->tree = intree;
 
   
-  Params_symbolic *paraS;
-  paraS = new Params_symbolic;
-  paraS->anzahl = leaves;
-  paraS->rhoS = x;
+//   Params_symbolic *paraS;
+//   paraS = new Params_symbolic;
+//   paraS->anzahl = leaves;
+//   paraS->rhoS = x;
   
 
   // the numbers for the gfs from input
   int i;
   for(i=0; i<leaves; i++){
     para->datagfs[i] = input_gfs[i];
-    paraS->datagfs[i] = input_gfs[i];
+//     paraS->datagfs[i] = input_gfs[i];
   }
   
     // -t or -r or -c is set to custom value
@@ -571,7 +571,7 @@ if (skipall_flag == 0) {
   rootTree(intree,NULL);
   unprob(intree);
   initialize_tree_numeric(intree,leaves);
-  cout << "done.\nTesting to computing probabilities along the tree...\n";
+  cout << "done.\nTesting to compute probabilities along the tree...\n";
 //   cout << "We did get past the initialize tree\n";
 //   check_probs(tree,anzahl,para->rhoS);
   comp_pkfhs_numeric(intree,leaves,2.8);

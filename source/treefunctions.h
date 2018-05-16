@@ -453,22 +453,16 @@ void emptytree(Node *node){  // node should be root to unprob whole tree
   node->neighbor2 = NULL;
   node->neighbor3 = NULL;
   
-  node->symblossprob1 = 0;
   for(inc = 0;inc < 500; inc++){
-    node->pkfh1[inc] = 0;
+    node->pkfh1_numeric[inc] = 0;
   }
   node->lossprob1 = 0;
   node->length1 = 0;
-  node->symblossprob2 = 0;
   for(inc = 0;inc < 500; inc++){
-    node->pkfh2[inc] = 0;
+    node->pkfh2_numeric[inc] = 0;
   }
   node->lossprob2 = 0;
   node->length2 = 0;
-  node->symblossprob3 = 0;
-  for(inc = 0;inc < 500; inc++){
-    node->pkfh3[inc] = 0;
-  }
   node->lossprob3 = 0;
   node->length3 = 0;
   node->marker = 0;
