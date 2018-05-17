@@ -50,7 +50,7 @@ int g_includecoreflag = 0;
 //parse the commandline for options
 
 
-  int get_args(int argc, char** argv, int* notest_flag, int* samplingbias_flag,  float* theta_value, float* rho_value, float* core_value, int* estimate_flag, int* details_flag, int* skipall_flag, int* runs_input, int* printtree_flag, int* pansize_flag, float* millgenerationstoMRCA, int* scale_flag)
+  int get_args(int argc, char** argv, int* notest_flag, int* samplingbias_flag,  float* theta_value, float* rho_value, float* core_value, int* estimate_flag, int* details_flag, int* skipall_flag, int* runs_input, int* printtree_flag, int* pansize_flag, float* millgenerationstoMRCA, int* scale_flag, float* customstarttheta, float* customstartrho, int* customstart_flag)
 {
     int i;
 
@@ -110,6 +110,19 @@ int g_includecoreflag = 0;
 				*millgenerationstoMRCA = atof(argv[++i]);
 				*pansize_flag = 1;
 				break;
+        case 'e':   if(i+2 >= argc) return -1;
+                *customstarttheta = atof(argv[++i]);
+                if (argv[i][0] == '-'){ 
+                    fprintf(stderr, "Missing parameter\n");
+                    return -1;
+                }
+                *customstartrho = atof(argv[++i]);
+                if (argv[i][0] == '-'){ 
+                    fprintf(stderr, "Missing second parameter\n");
+                    return -1;
+                }
+                *customstart_flag = 1;
+                break;
 
 		default:	fprintf(stderr,
 				"Unknown option %s\n", argv[i]);
@@ -222,15 +235,16 @@ printf("Filename Gene Frequency Data:\t %s\n", argv[2]);
 //   -a skip all but the results for a typical population
 //   -p print tree
 //   -b scaling of the tree is skipped
+//   -e custom start values for the estimation are used (need two )
   
 
     // Set defaults for all parameters
-    int notest_flag = 0, samplingbias_flag = 0, estimate_flag = 1, skipall_flag = 0, details_flag = 1, printtree_flag = 0, pansize_flag = 0, oldalgo_flag = 0, scale_flag = 1;
-    float theta_input = 0.0, rho_input = 0.0, core_input = 0.0, millgenstoMRCA_input = 0.0;
+    int notest_flag = 0, samplingbias_flag = 0, estimate_flag = 1, skipall_flag = 0, details_flag = 1, printtree_flag = 0, pansize_flag = 0, oldalgo_flag = 0, scale_flag = 1, customstart_flag = 0;
+    float theta_input = 0.0, rho_input = 0.0, core_input = 0.0, millgenstoMRCA_input = 0.0, customstarttheta = 0.0, customstartrho = 0.0;
     int runs_input = 0;
     
     
-    if ( get_args(argc, argv, &notest_flag, &samplingbias_flag, &theta_input, &rho_input, &core_input, &estimate_flag, &details_flag, &skipall_flag, &runs_input, &printtree_flag, &pansize_flag, &millgenstoMRCA_input, &scale_flag ) == -1 ){
+    if ( get_args(argc, argv, &notest_flag, &samplingbias_flag, &theta_input, &rho_input, &core_input, &estimate_flag, &details_flag, &skipall_flag, &runs_input, &printtree_flag, &pansize_flag, &millgenstoMRCA_input, &scale_flag, &customstarttheta, &customstartrho, &customstart_flag ) == -1 ){
       printf("something was wrong with your options, maybe you wrote '-t200' instead of '-t 200' ?\n");
       return -1;
     }
@@ -538,6 +552,9 @@ if (skipall_flag == 0) {
   if (estimate_flag == 1){
     printf("Estimating theta and rho...this may take some time\n");
     if (oldalgo_flag == 1){
+        if(customstart_flag == 1){
+            printf("WARNING: custom start values are not available in the non-numeric estimation procedure!\n");
+        }
       estimate(&theta_hat,&rho_hat,para);
     }
     else{
@@ -587,7 +604,7 @@ if (skipall_flag == 0) {
   // // // // //    
   
 //  cout << "We successfully called treegfs_symbolic_fast\n";        
-      estimate_numeric(&theta_hat,&rho_hat,para);
+      estimate_numeric(&theta_hat,&rho_hat,para,customstart_flag,customstarttheta,customstartrho);
     }
   }
   //////////////////* END estimate theta and rho*//////////////////////////////////////////

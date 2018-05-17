@@ -206,7 +206,7 @@ double my_f_numeric (const gsl_vector *v, void *params)
 // para->tree = tree;
 // }
 
-void estimate_numeric(float *theta_hat, float *rho_hat, Params *para){   
+void estimate_numeric(float *theta_hat, float *rho_hat, Params *para, int customstart_flag,float customstarttheta, float customstartrho){   
            
        const gsl_multimin_fminimizer_type *T = gsl_multimin_fminimizer_nmsimplex2;
        gsl_multimin_fminimizer *s = NULL;
@@ -236,6 +236,13 @@ void estimate_numeric(float *theta_hat, float *rho_hat, Params *para){
        if (firsttheta < 50.) firsttheta = 50;
        
        
+       if (customstart_flag == 1){
+        firsttheta = customstarttheta;
+        firstrho = customstartrho;
+        printf("Using custom start values for numeric parameter estimation:\n");
+        printf("theta start value = %.0f\t rho start value = %.2f\n",firsttheta, firstrho);
+        }
+       
        /* Starting point */
        x = gsl_vector_alloc (2);
        
@@ -245,7 +252,7 @@ void estimate_numeric(float *theta_hat, float *rho_hat, Params *para){
        gsl_vector_set (x, 0, firstrho);  // estimated starting point rho
        gsl_vector_set (x, 1, firsttheta); // estimated starting point theta
 
-       //        printf("firsttheta = %.0f\tfirstrho = %.2f\n",firsttheta, firstrho);
+//        printf("firsttheta = %.0f\tfirstrho = %.2f\n",firsttheta, firstrho);
        
      
        /* Set initial step sizes to 1 */
