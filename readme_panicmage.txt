@@ -5,22 +5,19 @@ INSTALLATION  (LINUX)
 extract all files to any directory
 
 For panicmage the GNU Scientific Library (GSL) -- development package  (libgsl-dev) is needed, please install it.
-In addition the following packages are needed:
-ginac-tools
-libginac-dev
 
 
 compile with
 
-"g++ panicmage.c -st -lm -lgsl -lgslcblas -lcln -lginac -o panicmage"
+"g++ panicmage.c -st -lm -lgsl -lgslcblas -o panicmage"
 
 
-or "g++ -std=c++11 panicmage.c -st -lm -lgsl -lgslcblas -lcln -lginac -o panicmage" if gcc is < 6.0.
+or "g++ -std=c++11 panicmage.c -st -lm -lgsl -lgslcblas -o panicmage" if gcc is < 6.0.
 
 
 you may now run panicmage from commandline with
 
-./image [TREEFILE] [GFS_FILE] [INT] ... [OPTIONS]
+./panicmage [TREEFILE] [GFS_FILE] [INT] ... [OPTIONS]
 
 
 [TREEFILE] 
@@ -65,6 +62,11 @@ you may now run panicmage from commandline with
   -a  -> all tests and estimations are skipped, only the theoretical results for a population with given parameters are shown. You have to set the parameters theta and rho
   
   -b  -> no rescaling of the supported tree is done
+
+  -e [FLOAT] [FLOAT] -> custom initial values are used for the estimation of theta and rho
+
+  -z -> include the number of core genes in the estimation procedure; needs to be set to estimate CRISPR spacer insertion and deletion rates
+
 
 
 Setting the parameters to custom values:
