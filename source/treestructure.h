@@ -13,11 +13,11 @@ typedef struct Node{
   struct Node *child1;
   struct Node *child2;
   struct Node *neighbor1;
-  float pkfh1_numeric[500];
+  float pkfh1_numeric[1000];
   float lossprob1;
   float length1;
   struct Node *neighbor2;
-  float pkfh2_numeric[500];
+  float pkfh2_numeric[1000];
   float lossprob2;
   float length2;
   struct Node *neighbor3;
@@ -26,7 +26,7 @@ typedef struct Node{
   int marker;
   float disttoroot;
   int compdone;
-} Node;
+}Node;
 
 
 typedef struct Params{

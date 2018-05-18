@@ -17,7 +17,7 @@ void initialize_tree_numeric(Node *node, int leaves){  // node should be root to
       int counter;
       int isleave = 0;
       // set all expressions to -1
-      for (counter = 0; counter < 500; counter++){
+      for (counter = 0; counter < 1000; counter++){
 	node->pkfh1_numeric[counter] = -1.0; node->pkfh2_numeric[counter] = -1.0;
       }
 //       cout << "so far ok\n";

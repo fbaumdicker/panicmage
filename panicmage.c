@@ -180,7 +180,12 @@ printf("Filename Gene Frequency Data:\t %s\n", argv[2]);
     inputdatei = fopen(dateiname,"r");
     
     if (inputdatei != NULL){
-      fscanf (inputdatei, "%s", treeline);
+      fscanf (inputdatei, "%99999s", treeline);
+      if(strlen(treeline) > 99990){
+      printf("Error: Newick tree is to long. Please modify treeline char or contact the developers to change that.\n");
+      return -1;
+    }
+      
 //    fclose (inputdatei);   // if this is included there are strange errors in the parsenewick routine!!
     }
     else{ printf("ERROR: no such file found\n"); return -1;}
@@ -188,6 +193,10 @@ printf("Filename Gene Frequency Data:\t %s\n", argv[2]);
 
     int leaves;    
     leaves = atoi(argv[3]);
+    if(leaves >999){
+        printf("Error: Too large sample. Currently only less than 1000 individuals are supported. Please modify pkfhx_numeric or contact the developers to change that.\n");
+        return -1;
+    }
 
     strcpy(dateiname,argv[2]);
     
@@ -205,9 +214,10 @@ printf("Filename Gene Frequency Data:\t %s\n", argv[2]);
       while (fscanf (inputdatei_gfs, "%s", gfsline) != EOF){
 //       printf ("%s\t", gfsline);
       input_gfs[idex] = atof(gfsline);
-      if (idex >= leaves) {printf("\nWARNING: number of gene frequencies exceeds number of leaves - additional info is ignored\n");}
+      if (idex >= leaves) {printf("\nERROR: number of gene frequencies exceeds number of leaves\n");return -1;}
       idex++;
       }
+      if (idex < leaves) {{printf("\nERROR: number of gene frequencies in gfs file is too low for given number of leaves\n");return -1;}}
 //    fclose (inputdatei_gfs);   // if this is included there are strange errors in the parsenewick routine!!
     }
     else{
