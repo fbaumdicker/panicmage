@@ -10,7 +10,7 @@
  * Author: Franz Baumdicker, baumdicker@stochastik.uni-freiburg.de
  * Author: Peter Pfaffelhuber, pp@stochastik.uni-freiburg.de
  *****************************************************************/
-// compile with g++ panicmage.c -lm -lgsl -lgslcblas -lcln -lginac -o panicmage
+// compile with g++ panicmage.c -lm -lgsl -lgslcblas -o panicmage
 
 
 #include <gsl/gsl_multimin.h>
